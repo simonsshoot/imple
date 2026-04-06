@@ -19,19 +19,17 @@ class EntityRef:
 
 
 class Controller:
-	"""Low-level controller for ManiSkill environments.
-
-	The API mirrors the low-level planner style from AI2-THOR so existing
-	low-level plans can be reused with minimal changes.
-	"""
-
-	def __init__(self, env):
+	def __init__(self, env: Any) -> None:
 		self.env = env
 		self.u = env.unwrapped
 		self.actions = [
 			"find",
 			"pick",
 			"put",
+			"move_left",
+			"move_right",
+			"move_forward",
+			"move_back",
 			"open",
 			"close",
 			"slice",
@@ -59,11 +57,11 @@ class Controller:
 		self._scene_entities: Dict[str, EntityRef] = {}
 		self.restore_scene()
 
-	def restore_scene(self):
+	def restore_scene(self) -> None:
 		self._refresh_scene_entities()
 		self.multi_objs_dict = {}
 
-	def _refresh_scene_entities(self):
+	def _refresh_scene_entities(self) -> None:
 		self._scene_entities = {}
 		scene = self.u.scene
 		for name, actor in scene.actors.items():
@@ -110,6 +108,7 @@ class Controller:
 		return synonyms.get(name, obj_name)
 
 	def _resolve_entity(self, obj_name: str, obj_num: Optional[int] = None) -> Optional[EntityRef]:
+		"""实体解析，将自然语言描述的对象名称映射到场景中的实际物理实体"""
 		del obj_num  # Not used in current ManiSkill scenes.
 		if not self._scene_entities:
 			self._refresh_scene_entities()
@@ -163,7 +162,8 @@ class Controller:
 				action[..., 6] = float(np.clip(grip, -1.0, 1.0))
 		return action
 
-	def _step(self, action: np.ndarray, repeat: int = 1):
+	def _step(self, action: np.ndarray, repeat: int = 1) -> None:
+		"""_step是最终落脚函数，maniskill的底层实现"""
 		for _ in range(repeat):
 			self.last_obs, self.last_reward, self.last_terminated, self.last_truncated, self.last_info = self.env.step(action)
 			if self.held_object_name is not None and self.held_object_soft_attached:
@@ -183,7 +183,7 @@ class Controller:
 			p = p[0]
 		return p.astype(np.float32)
 
-	def _move_to(self, target_xyz: np.ndarray, grip: Optional[float] = None, steps: int = 40, gain: float = 8.0, tol: float = 0.02):
+	def _move_to(self, target_xyz: np.ndarray, grip: Optional[float] = None, steps: int = 40, gain: float = 8.0, tol: float = 0.02) -> None:
 		target_xyz = np.asarray(target_xyz, dtype=np.float32)
 		for _ in range(steps):
 			ee = self._get_tcp_pos()
@@ -193,7 +193,7 @@ class Controller:
 			if np.linalg.norm(target_xyz - ee) < tol:
 				break
 
-	def _hold_position(self, grip: Optional[float] = None, steps: int = 6):
+	def _hold_position(self, grip: Optional[float] = None, steps: int = 6) -> None:
 		action = self._build_action(delta_xyz=np.zeros(3, dtype=np.float32), grip=grip)
 		self._step(action, repeat=steps)
 
@@ -208,7 +208,7 @@ class Controller:
 		except Exception:
 			return False
 
-	def _soft_follow_held_object(self):
+	def _soft_follow_held_object(self) -> None:
 		if self.held_object_name is None:
 			return
 		ent = self._resolve_entity(self.held_object_name)
@@ -218,7 +218,7 @@ class Controller:
 		follow_pos = np.array([tcp[0], tcp[1], max(0.02, tcp[2] - 0.045)], dtype=np.float32)
 		self._set_actor_position(ent, follow_pos)
 
-	def llm_skill_interact(self, instruction: str):
+	def llm_skill_interact(self, instruction: str) -> Dict[str, Any]:
 		instruction = instruction.strip()
 
 		if instruction.startswith("find "):
@@ -246,6 +246,14 @@ class Controller:
 			)
 			obj_name, obj_num = self.extract_number_from_string(obj_name)
 			ret = self.put(obj_name, obj_num)
+		elif instruction.startswith("move_left") or instruction.startswith("move left"):
+			ret = self.move_left()
+		elif instruction.startswith("move_right") or instruction.startswith("move right"):
+			ret = self.move_right()
+		elif instruction.startswith("move_forward") or instruction.startswith("move forward"):
+			ret = self.move_forward()
+		elif instruction.startswith("move_back") or instruction.startswith("move back") or instruction.startswith("move backward"):
+			ret = self.move_back()
 		elif instruction.startswith("open "):
 			obj_name = instruction.replace("open the ", "").replace("open a ", "").replace("open an ", "").replace("open ", "")
 			obj_name, obj_num = self.extract_number_from_string(obj_name)
@@ -339,7 +347,7 @@ class Controller:
 			}
 		return self.object_states[obj_name]
 
-	def find(self, target_obj: str, obj_num: Optional[int]):
+	def find(self, target_obj: str, obj_num: Optional[int]) -> str:
 		ent = self._resolve_entity(target_obj, obj_num)
 		if ent is None:
 			return f"Cannot find {target_obj}"
@@ -351,7 +359,7 @@ class Controller:
 		self._hold_position(grip=1.0, steps=4)
 		return ""
 
-	def pick(self, obj_name: str, obj_num: Optional[int], manualInteract: bool = False):
+	def pick(self, obj_name: str, obj_num: Optional[int], manualInteract: bool = False) -> str:
 		del manualInteract
 		ent = self._resolve_entity(obj_name, obj_num)
 		if ent is None:
@@ -364,7 +372,6 @@ class Controller:
 		above[2] += 0.06
 		self._move_to(above, grip=1.0, steps=32)
 		self._move_to(pos + np.array([0.0, 0.0, 0.015], dtype=np.float32), grip=1.0, steps=20)
-
 		# Close gripper and mark this actor as held.
 		self._hold_position(grip=-1.0, steps=10)
 		is_grasped = True
@@ -375,7 +382,6 @@ class Controller:
 				is_grasped = True
 
 		if not is_grasped:
-			# Fallback for simple tabletop scenes where strict grasp detection may
 			# fail despite close-contact motion.
 			self.held_object_name = ent.name
 			self.held_object_soft_attached = True
@@ -388,7 +394,7 @@ class Controller:
 		self._move_to(above, grip=-1.0, steps=24)
 		return ""
 
-	def put(self, receptacle_name: str, obj_num: Optional[int]):
+	def put(self, receptacle_name: str, obj_num: Optional[int]) -> str:
 		del obj_num
 		if self.held_object_name is None:
 			return "Nothing Done. Robot is not holding any object"
@@ -409,7 +415,30 @@ class Controller:
 		self._move_to(target + np.array([0.0, 0.0, 0.08], dtype=np.float32), grip=1.0, steps=16)
 		return ""
 
-	def slice(self, obj_name: str, obj_num: Optional[int]):
+	def _move_by(self, delta_xyz: np.ndarray, steps: int = 20, grip: Optional[float] = None) -> None:
+		start = self._get_tcp_pos()
+		target = start + np.asarray(delta_xyz, dtype=np.float32)
+		target[2] = max(0.05, float(target[2]))
+		self._move_to(target, grip=grip, steps=steps)
+
+	def move_left(self) -> str:
+		# grip为-1表示正抓着物体的
+		self._move_by(np.array([0.0, 0.10, 0.0], dtype=np.float32), steps=18, grip=-1.0 if self.held_object_name else 1.0)
+		return ""
+
+	def move_right(self) -> str:
+		self._move_by(np.array([0.0, -0.10, 0.0], dtype=np.float32), steps=18, grip=-1.0 if self.held_object_name else 1.0)
+		return ""
+
+	def move_forward(self) -> str:
+		self._move_by(np.array([0.10, 0.0, 0.0], dtype=np.float32), steps=18, grip=-1.0 if self.held_object_name else 1.0)
+		return ""
+
+	def move_back(self) -> str:
+		self._move_by(np.array([-0.10, 0.0, 0.0], dtype=np.float32), steps=18, grip=-1.0 if self.held_object_name else 1.0)
+		return ""
+
+	def slice(self, obj_name: str, obj_num: Optional[int]) -> str:
 		ent = self._resolve_entity(obj_name, obj_num)
 		if ent is None:
 			return f"Cannot find {obj_name} to slice"
@@ -418,7 +447,7 @@ class Controller:
 		state["sliced"] = True
 		return ""
 
-	def turn_on(self, obj_name: str, obj_num: Optional[int]):
+	def turn_on(self, obj_name: str, obj_num: Optional[int]) -> str:
 		ent = self._resolve_entity(obj_name, obj_num)
 		if ent is None:
 			return f"Cannot find {obj_name} to turn on"
@@ -427,7 +456,7 @@ class Controller:
 		state["on"] = True
 		return ""
 
-	def turn_off(self, obj_name: str, obj_num: Optional[int]):
+	def turn_off(self, obj_name: str, obj_num: Optional[int]) -> str:
 		ent = self._resolve_entity(obj_name, obj_num)
 		if ent is None:
 			return f"Cannot find {obj_name} to turn off"
@@ -436,7 +465,7 @@ class Controller:
 		state["on"] = False
 		return ""
 
-	def drop(self):
+	def drop(self) -> str:
 		if self.held_object_name is None:
 			return "Nothing Done. Robot is not holding any object"
 
@@ -445,7 +474,7 @@ class Controller:
 		self.held_object_soft_attached = False
 		return ""
 
-	def throw(self):
+	def throw(self) -> str:
 		if self.held_object_name is None:
 			return "Nothing Done. Robot is not holding any object"
 
@@ -458,7 +487,7 @@ class Controller:
 		self.held_object_soft_attached = False
 		return ""
 
-	def break_(self, obj_name: str, obj_num: Optional[int]):
+	def break_(self, obj_name: str, obj_num: Optional[int]) -> str:
 		ent = self._resolve_entity(obj_name, obj_num)
 		if ent is None:
 			return f"Cannot find {obj_name} to break"
@@ -466,7 +495,7 @@ class Controller:
 		state["broken"] = True
 		return ""
 
-	def cook(self, obj_name: str, obj_num: Optional[int]):
+	def cook(self, obj_name: str, obj_num: Optional[int]) -> str:
 		ent = self._resolve_entity(obj_name, obj_num)
 		if ent is None:
 			return f"Cannot find {obj_name} to cook"
@@ -474,7 +503,7 @@ class Controller:
 		state["cooked"] = True
 		return ""
 
-	def dirty(self, obj_name: str, obj_num: Optional[int]):
+	def dirty(self, obj_name: str, obj_num: Optional[int]) -> str:
 		ent = self._resolve_entity(obj_name, obj_num)
 		if ent is None:
 			return f"Cannot find {obj_name} to dirty"
@@ -482,7 +511,7 @@ class Controller:
 		state["dirty"] = True
 		return ""
 
-	def clean(self, obj_name: str, obj_num: Optional[int]):
+	def clean(self, obj_name: str, obj_num: Optional[int]) -> str:
 		ent = self._resolve_entity(obj_name, obj_num)
 		if ent is None:
 			return f"Cannot find {obj_name} to clean"
@@ -490,7 +519,7 @@ class Controller:
 		state["dirty"] = False
 		return ""
 
-	def fillLiquid(self, obj_name: str, obj_num: Optional[int], liquid_name: str):
+	def fillLiquid(self, obj_name: str, obj_num: Optional[int], liquid_name: str) -> str:
 		ent = self._resolve_entity(obj_name, obj_num)
 		if ent is None:
 			return f"Cannot find {obj_name} to fill"
@@ -498,7 +527,7 @@ class Controller:
 		state["filled_liquid"] = liquid_name
 		return ""
 
-	def emptyLiquid(self, obj_name: str, obj_num: Optional[int]):
+	def emptyLiquid(self, obj_name: str, obj_num: Optional[int]) -> str:
 		ent = self._resolve_entity(obj_name, obj_num)
 		if ent is None:
 			return f"Cannot find {obj_name} to empty"
@@ -506,14 +535,13 @@ class Controller:
 		state["filled_liquid"] = None
 		return ""
 
-	def pour(self):
+	def pour(self) -> str:
 		if self.held_object_name is None:
 			return "Nothing Done. Robot is not holding any object"
 		state = self._ensure_state(self.held_object_name)
 		if state["filled_liquid"] is None:
 			return "Nothing Done. Held object is not filled with liquid"
 
-		# Emulate pour by wrist trajectory in Cartesian space.
 		tcp = self._get_tcp_pos()
 		for deg in [30, 55, 80, 55, 30, 0]:
 			dz = -0.01 * math.sin(math.radians(deg))
@@ -521,7 +549,7 @@ class Controller:
 		state["filled_liquid"] = None
 		return ""
 
-	def close(self, obj_name: str, obj_num: Optional[int]):
+	def close(self, obj_name: str, obj_num: Optional[int]) -> str:
 		ent = self._resolve_entity(obj_name, obj_num)
 		if ent is None:
 			return f"Cannot find {obj_name} to close"
@@ -529,7 +557,7 @@ class Controller:
 		state["open"] = False
 		return ""
 
-	def open(self, obj_name: str, obj_num: Optional[int]):
+	def open(self, obj_name: str, obj_num: Optional[int]) -> str:
 		ent = self._resolve_entity(obj_name, obj_num)
 		if ent is None:
 			return f"Cannot find {obj_name} to open"

@@ -9,8 +9,8 @@ from agents import Agents
 from controller import Controller
 from mani_skill.utils.wrappers.record import RecordEpisode
 
-def run(args: argparse.Namespace)-> None:
-  task= args.tasks
+def run(args: argparse.Namespace) -> None:
+  task = args.tasks
   scene = args.scene
   output_dir = Path(args.output_dir)
   os.makedirs(output_dir, exist_ok=True)
@@ -19,8 +19,6 @@ def run(args: argparse.Namespace)-> None:
     os.environ["CUDA_VISIBLE_DEVICES"] = ""
 
   if args.obs_mode == "state":
-    # Keep this path strictly aligned with infos/vlm.py, which is known to be
-    # more stable on this machine.
     env = gym.make(
       scene,
       obs_mode="state",
@@ -52,9 +50,6 @@ def run(args: argparse.Namespace)-> None:
       video_fps=args.video_fps,
     )
   obs, info = env.reset(seed=args.seed) 
-
-  # Prefer sensor image when available; fallback to env.render() for better
-  # compatibility on headless systems where rgb+segmentation may crash.
   img = None
   if isinstance(obs, dict) and "sensor_data" in obs and len(obs["sensor_data"]) > 0:
     cam_name = next(iter(obs["sensor_data"]))
@@ -65,8 +60,6 @@ def run(args: argparse.Namespace)-> None:
       raise RuntimeError("Failed to get image for VLM: sensor_data missing and env.render() returned None")
     img = frame
   else:
-    # In state mode, many tasks do not provide sensor_data. Try rendering one
-    # frame, and fallback to a blank placeholder if rendering is unavailable.
     frame = env.render()
     if frame is not None:
       img = np.asarray(frame)
@@ -96,12 +89,18 @@ def run(args: argparse.Namespace)-> None:
 
   _, plan = agent.multi_agent_vision_planning(objs_all)
 
-  low_level_plan = gen_low_level_plan(plan)
+  low_level_plan = []
+  try:
+    low_level_plan = agent.generate_low_level_plan(plan, objs_from_scene=objs_all)
+  except Exception as exc:
+    print(f"[run] LLM low-level planner failed, fallback to regex mapper: {exc}")
+
+  if not low_level_plan:
+    low_level_plan = gen_low_level_plan(plan)
 
   planner = Controller(env)
   execute_low_level_plan(planner, low_level_plan)
 
-  # Ensure at least one recorded transition so RecordEpisode can write mp4
   if args.save_video and hasattr(env, "render_images") and len(env.render_images) < 2:
     noop = np.zeros_like(env.action_space.sample(), dtype=np.float32)
     env.step(noop)

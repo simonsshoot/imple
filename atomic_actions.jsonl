@@ -1,0 +1,21 @@
+{"action_id":1,"action":"find(target_obj: str, obj_num: Optional[int]) -> str", "explanation":"Instruct the robot to locate the target object and move to its vicinity. If the object cannot be found, return an error message."}
+{"action_id":2,"action":"pick(obj_name: str, obj_num: Optional[int], manualInteract: bool = False) -> str", "explanation":"Move to the target object, close the gripper, and attempt to grasp it. Returns an error message when object lookup or grasp preconditions fail."}
+{"action_id":3,"action":"put(receptacle_name: str, obj_num: Optional[int]) -> str", "explanation":"Move the held object above a receptacle and release it. Requires the robot to already hold an object."}
+{"action_id":4,"action":"move_left() -> str", "explanation":"Translate end-effector left in Cartesian space by a small fixed delta while preserving grasp state."}
+{"action_id":5,"action":"move_right() -> str", "explanation":"Translate end-effector right in Cartesian space by a small fixed delta while preserving grasp state."}
+{"action_id":6,"action":"move_forward() -> str", "explanation":"Translate end-effector forward in Cartesian space by a small fixed delta while preserving grasp state."}
+{"action_id":7,"action":"move_back() -> str", "explanation":"Translate end-effector backward in Cartesian space by a small fixed delta while preserving grasp state."}
+{"action_id":8,"action":"open(obj_name: str, obj_num: Optional[int]) -> str", "explanation":"Mark target object as open in symbolic state after locating it."}
+{"action_id":9,"action":"close(obj_name: str, obj_num: Optional[int]) -> str", "explanation":"Mark target object as closed in symbolic state after locating it."}
+{"action_id":10,"action":"slice(obj_name: str, obj_num: Optional[int]) -> str", "explanation":"Mark target object as sliced in symbolic state after locating it."}
+{"action_id":11,"action":"turn_on(obj_name: str, obj_num: Optional[int]) -> str", "explanation":"Mark target object as switched on in symbolic state after locating it."}
+{"action_id":12,"action":"turn_off(obj_name: str, obj_num: Optional[int]) -> str", "explanation":"Mark target object as switched off in symbolic state after locating it."}
+{"action_id":13,"action":"drop() -> str", "explanation":"Open gripper to release currently held object at current end-effector pose."}
+{"action_id":14,"action":"throw() -> str", "explanation":"Move the hand forward and release the held object to simulate a throw."}
+{"action_id":15,"action":"break_(obj_name: str, obj_num: Optional[int]) -> str", "explanation":"Mark target object as broken in symbolic state."}
+{"action_id":16,"action":"cook(obj_name: str, obj_num: Optional[int]) -> str", "explanation":"Mark target object as cooked in symbolic state."}
+{"action_id":17,"action":"dirty(obj_name: str, obj_num: Optional[int]) -> str", "explanation":"Mark target object as dirty in symbolic state."}
+{"action_id":18,"action":"clean(obj_name: str, obj_num: Optional[int]) -> str", "explanation":"Mark target object as clean in symbolic state."}
+{"action_id":19,"action":"fillLiquid(obj_name: str, obj_num: Optional[int], liquid_name: str) -> str", "explanation":"Mark target object as filled with a specific liquid in symbolic state."}
+{"action_id":20,"action":"emptyLiquid(obj_name: str, obj_num: Optional[int]) -> str", "explanation":"Clear filled liquid state for the target object."}
+{"action_id":21,"action":"pour() -> str", "explanation":"Execute a short pouring wrist trajectory and clear liquid state of held object."}

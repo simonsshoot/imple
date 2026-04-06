@@ -25,7 +25,7 @@ echo "^^^ [pipeline] starting ^^^"
 python imple/run.py \
   --scene PickCube-v1 \
   --obs-mode state \
-  --tasks "Pickup the ball, move to right, and put it down" \
+  --tasks "Pickup the cube, move to right, and put it down" \
   --model qwen-vl-max \
   --output-dir imple/outputs \
   --sim-backend cpu \

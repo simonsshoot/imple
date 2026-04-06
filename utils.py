@@ -3,14 +3,13 @@ import io
 import os
 import re
 import traceback
-from typing import Iterable, List
+from pathlib import Path
+from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 import numpy as np
 from openai import OpenAI
 from PIL import Image
 
-
-# Default endpoints/keys for different providers.
 OPENAI_API_KEY = "sk-zk280d44e707a4a809a4c467266a213db66693bf03745f72"
 OPENAI_BASE_URL = "https://api.zhizengzeng.com/v1"
 
@@ -22,7 +21,7 @@ DEFAULT_QWEN_MODEL = "qwen-vl-max"
 API_KEY = "sk-1a68ae54b3fd424f91d0979d7b67b491"
 
 
-def model_selection(model:str="gpt-4o"):
+def model_selection(model: str = "gpt-4o") -> Tuple[OpenAI, str]:
   """根据args参数返回模型的client"""
   model_name = (model or "gpt-4o").strip()
   model_lower = model_name.casefold()
@@ -39,8 +38,6 @@ def model_selection(model:str="gpt-4o"):
     selected_model = model_name if model_name else DEFAULT_QWEN_MODEL
     client = OpenAI(api_key=api_key, base_url=base_url)
     return client, selected_model
-
-  # Default route: OpenAI-compatible endpoint.
   api_key = os.getenv("OPENAI_API_KEY", OPENAI_API_KEY)
   base_url = os.getenv("OPENAI_BASE_URL", OPENAI_BASE_URL)
   client = OpenAI(api_key=api_key, base_url=base_url)
@@ -60,9 +57,8 @@ def ndarray_to_base64(img_array: np.ndarray, image_format: str = "PNG") -> str:
   img_str = base64.b64encode(buffered.getvalue()).decode("utf-8")
   return img_str
 
-def save_pics(img, file_path: str, image_format: str = "PNG"):
+def save_pics(img: Any, file_path: str | Path, image_format: str = "PNG") -> None:
   arr = np.asarray(img)
-
   # Normalize common ManiSkill image layouts to HxWxC.
   if arr.ndim == 4:
     # Typical cases: [N, H, W, C] or [1, H, W, C]. Save the first frame.
@@ -81,24 +77,24 @@ def save_pics(img, file_path: str, image_format: str = "PNG"):
   Image.fromarray(arr.astype(np.uint8)).save(file_path, format=image_format)
 
 
-def gen_low_level_plan(high_level_plan: str):
+def gen_low_level_plan(high_level_plan: str) -> List[str]:
   """高层计划到低层计划的转换器,将自然语言描述的高层任务计划转换为机器人可以直接执行的底层动作序列。"""
   if not high_level_plan:
     return []
-
-  # 允许输入是字符串(多行)或列表(每行一个步骤)。
   if isinstance(high_level_plan, str):
     lines = [line.strip(" -\t") for line in high_level_plan.splitlines() if line.strip()]
   elif isinstance(high_level_plan, Iterable):
     lines = [str(line).strip(" -\t") for line in high_level_plan if str(line).strip()]
   else:
     return []
-
-  # 标准低层动作集合（需与 Controller.llm_skill_interact 保持一致）。
   valid_prefixes = [
     "find",
     "pick",
     "put",
+    "move_left",
+    "move_right",
+    "move_forward",
+    "move_back",
     "open",
     "close",
     "slice",
@@ -117,7 +113,11 @@ def gen_low_level_plan(high_level_plan: str):
 
   # 将常见自然语言动词映射到标准低层动词。
   keyword_to_action = [
-    (r"\b(find|go to|walk to|move to|approach|locate|search|face)\b", "find"),
+    (r"\b(move|shift|go)\s+(to\s+)?(the\s+)?left\b", "move_left"),
+    (r"\b(move|shift|go)\s+(to\s+)?(the\s+)?right\b", "move_right"),
+    (r"\b(move|shift|go)\s+(to\s+)?(the\s+)?(forward|ahead)\b", "move_forward"),
+    (r"\b(move|shift|go)\s+(to\s+)?(the\s+)?(back|backward|backwards)\b", "move_back"),
+    (r"\b(find|go to|walk to|approach|locate|search|face)\b", "find"),
     (r"\b(pick up|pickup|pick|grab|grasp|take|collect)\b", "pick"),
     (r"\b(place|put|insert|drop into|put down on|set on)\b", "put"),
     (r"\b(open)\b", "open"),
@@ -170,6 +170,15 @@ def gen_low_level_plan(high_level_plan: str):
     "object",
   }
 
+  non_pick_targets = {
+    "table",
+    "surface",
+    "workspace",
+    "table-workspace",
+    "bin",
+    "box",
+  }
+
   def _clean_text(text: str) -> str:
     text = text.strip().strip(".,;:")
     text = re.sub(r"^\d+[\).]\s*", "", text)
@@ -177,7 +186,7 @@ def gen_low_level_plan(high_level_plan: str):
 
   def _extract_object_phrase(text: str, action: str) -> str:
     text_l = text.casefold()
-    # 去掉动词前缀。
+    # 去掉动词前缀
     text_l = re.sub(r"^(please\s+)?(now\s+)?", "", text_l)
     text_l = re.sub(r"^(turn\s+around\s+and\s+)?", "", text_l)
     text_l = re.sub(r"^(walk\s+to\s+and\s+)?", "", text_l)
@@ -203,14 +212,26 @@ def gen_low_level_plan(high_level_plan: str):
     tokens = [t for t in re.split(r"\s+", candidate.strip()) if t and t not in stop_words]
     if not tokens:
       return ""
-
-    # 控制目标短语长度，避免整句都进来。
+    # 控制目标短语长度，避免整句都进来
     phrase = " ".join(tokens[:4]).strip(".,;:")
     return phrase
 
+  def _extract_pick_object(text: str) -> str:
+    text_l = text.casefold()
+    m = re.search(
+      r"\b(?:pick\s*up|pickup|pick|grasp|grab|take|collect)\b\s+(.+?)(?:\b(on|onto|in|into|at|from|with|while|by)\b|$)",
+      text_l,
+    )
+    if not m:
+      return ""
+    candidate = m.group(1)
+    tokens = [t for t in re.split(r"\s+", candidate.strip()) if t and t not in stop_words]
+    if not tokens:
+      return ""
+    return _normalize_obj_phrase(" ".join(tokens[:3]).strip(".,;:"))
+
   def _extract_salient_object(text: str) -> str:
     text_l = text.casefold()
-    # Keep short object phrases like "red cube", "wooden surface", "the bin".
     candidates = re.findall(
       r"\b(?:the\s+|a\s+|an\s+)?(?:red|blue|green|yellow|black|white|wooden|small|large\s+)?"
       r"(cube|sphere|ball|box|bin|mug|cup|bottle|table|surface|object)\b",
@@ -222,11 +243,9 @@ def gen_low_level_plan(high_level_plan: str):
 
   def _normalize_obj_phrase(obj_phrase: str) -> str:
     p = obj_phrase.casefold().strip()
-    # Map generic language to scene-friendly names.
     p = re.sub(r"\b(ball|orb)\b", "sphere", p)
     p = re.sub(r"\b(surface)\b", "table", p)
     p = re.sub(r"\b(wooden table|wood table)\b", "table", p)
-    # Remove manipulator words that are not scene entities.
     p = re.sub(r"\b(robot|arm|gripper|hand|end effector|end-effector)\b", "", p)
     p = re.sub(r"\s+", " ", p).strip()
     return p
@@ -238,13 +257,24 @@ def gen_low_level_plan(high_level_plan: str):
       continue
 
     line_l = line.casefold()
+    if re.search(r"\b(move|shift|go)\b", line_l):
+      if re.search(r"\bright\b", line_l):
+        low_level_plan.append("move_right")
+        continue
+      if re.search(r"\bleft\b", line_l):
+        low_level_plan.append("move_left")
+        continue
+      if re.search(r"\b(forward|ahead)\b", line_l):
+        low_level_plan.append("move_forward")
+        continue
+      if re.search(r"\b(back|backward|backwards)\b", line_l):
+        low_level_plan.append("move_back")
+        continue
 
-    # Skip pure motion-only lines (they are usually transitional and not object-level skills).
-    if re.search(r"\b(move|raise|lower|lift|shift)\b", line_l) and re.search(r"\b(left|right|up|down|downward|upward)\b", line_l):
+    if re.search(r"\b(move|raise|lower|lift|shift)\b", line_l) and re.search(r"\b(up|down|downward|upward)\b", line_l):
       if not re.search(r"\b(grasp|pick|grab|place|put|release|drop)\b", line_l):
         continue
 
-    # Special handling for gripper-language plans.
     if re.search(r"\bclose\b", line_l) and re.search(r"\bgripper\b", line_l) and re.search(r"\b(pick|grasp|grab|take)\b", line_l):
       obj = _normalize_obj_phrase(_extract_salient_object(line_l))
       low_level_plan.append(f"pick {obj}" if obj else "pick")
@@ -257,7 +287,11 @@ def gen_low_level_plan(high_level_plan: str):
       low_level_plan.append("put table")
       continue
 
-    # 若本身已是标准低层动作，直接接收。
+    if re.search(r"\blower\b", line_l) and re.search(r"\b(on|onto)\b", line_l) and re.search(r"\b(surface|table)\b", line_l):
+      low_level_plan.append("put table")
+      continue
+
+    # 若本身已是标准低层动作，直接接收
     matched_standard = False
     for prefix in valid_prefixes:
       if line_l.startswith(prefix.casefold()):
@@ -267,7 +301,6 @@ def gen_low_level_plan(high_level_plan: str):
     if matched_standard:
       continue
 
-    # 否则尝试用规则映射到标准动作。
     mapped_action = None
     for pat, act in keyword_to_action:
       if re.search(pat, line_l):
@@ -275,15 +308,23 @@ def gen_low_level_plan(high_level_plan: str):
         break
 
     if mapped_action is None:
-      # 无法转换时跳过该行（稳健性优先）。
+      continue
+
+    if mapped_action in {"move_left", "move_right", "move_forward", "move_back"}:
+      low_level_plan.append(mapped_action)
       continue
 
     if mapped_action in {"drop", "throw", "pour"}:
       low_level_plan.append(mapped_action)
       continue
 
-    # Handle common motion-language outputs from planning models.
     if mapped_action == "pick":
+      direct_pick_obj = _extract_pick_object(line)
+      if direct_pick_obj:
+        head = direct_pick_obj.split()[-1]
+        if head and head not in non_pick_targets:
+          low_level_plan.append(f"pick {head}")
+          continue
       if "sphere" in line_l:
         low_level_plan.append("pick sphere")
         continue
@@ -313,8 +354,6 @@ def gen_low_level_plan(high_level_plan: str):
     obj_phrase = _extract_object_phrase(line, mapped_action)
     if obj_phrase:
       obj_phrase = _normalize_obj_phrase(obj_phrase)
-
-    # If extracted phrase is obviously not an entity, fallback to salient object noun.
     if (
       not obj_phrase
       or re.search(r"\b(robot|arm|gripper|downward|upward|left|right|move)\b", obj_phrase)
@@ -323,25 +362,28 @@ def gen_low_level_plan(high_level_plan: str):
       salient = _normalize_obj_phrase(_extract_salient_object(line))
       if salient:
         obj_phrase = salient
+    if mapped_action == "pick" and obj_phrase:
+      head = obj_phrase.split()[-1]
+      if head in non_pick_targets:
+        safer = _extract_pick_object(line)
+        if safer:
+          obj_phrase = safer.split()[-1]
+        else:
+          obj_phrase = "cube"
 
     if not obj_phrase:
-      # 兜底：没有客体时仍保留动词，交给 controller 给出失败信息。
       low_level_plan.append(mapped_action)
     else:
       if mapped_action == "fillLiquid":
-        # fill 需要液体名，默认 water。
         if obj_phrase.split()[-1] not in {"water", "coffee", "wine"}:
           obj_phrase = f"{obj_phrase} water"
       low_level_plan.append(f"{mapped_action} {obj_phrase}".strip())
-
-  # Remove duplicates while preserving order.
   dedup_plan: List[str] = []
   for step in low_level_plan:
     if len(dedup_plan) == 0 or dedup_plan[-1] != step:
       dedup_plan.append(step)
   low_level_plan = dedup_plan
 
-  # Canonicalize common object synonyms for ManiSkill tasks.
   canon_map = {
     "ball": "sphere",
     "orb": "sphere",
@@ -354,7 +396,6 @@ def gen_low_level_plan(high_level_plan: str):
     canonicalized.append(s)
   low_level_plan = canonicalized
 
-  # If we try to pick an object without a prior find, prepend a find step.
   improved_plan: List[str] = []
   found_targets = set()
   for step in low_level_plan:
@@ -373,8 +414,6 @@ def gen_low_level_plan(high_level_plan: str):
 
     improved_plan.append(step)
   low_level_plan = improved_plan
-
-  # Task-specific fallback: ensure non-empty executable plan.
   if len(low_level_plan) == 0:
     print("fallback to default plan")
     text = "\n".join(lines).lower()
@@ -388,7 +427,7 @@ def gen_low_level_plan(high_level_plan: str):
   print(f"[gen_low_level_plan] high_level_plan:\n{high_level_plan}\n=> low_level_plan:\n{low_level_plan}")
   return low_level_plan
 
-def execute_low_level_plan(planner, low_level_plan):  
+def execute_low_level_plan(planner: Any, low_level_plan: Optional[List[str] | str]) -> Dict[str, Any]:
   """执行底层计划的函数,接收一个低层计划和一个控制器实例，解析计划中的动作指令，并调用控制器的方法来执行这些动作。"""
   if not hasattr(planner, "llm_skill_interact"):
     raise AttributeError("planner must provide llm_skill_interact(instruction)")
