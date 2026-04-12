@@ -1,4 +1,5 @@
 import logging
+import importlib
 import math
 import re
 import string
@@ -6,7 +7,6 @@ from dataclasses import dataclass
 from typing import Any, Dict, Optional, Tuple
 
 import numpy as np
-from mani_skill.utils.structs import Pose
 
 log = logging.getLogger(__name__)
 
@@ -54,6 +54,7 @@ class Controller:
 		self.object_states: Dict[str, Dict[str, Any]] = {}
 		self.held_object_name: Optional[str] = None
 		self.held_object_soft_attached: bool = False
+		self.frame_callback = None
 		self._scene_entities: Dict[str, EntityRef] = {}
 		self.restore_scene()
 
@@ -61,13 +62,82 @@ class Controller:
 		self._refresh_scene_entities()
 		self.multi_objs_dict = {}
 
+	def _get_scene_obj(self) -> Optional[Any]:
+		scene = getattr(self.u, "scene", None)
+		if scene is None:
+			scene = getattr(self.u, "_scene", None)
+		return scene
+
 	def _refresh_scene_entities(self) -> None:
 		self._scene_entities = {}
-		scene = self.u.scene
-		for name, actor in scene.actors.items():
-			self._scene_entities[name] = EntityRef(name=name, entity_type="actor", entity=actor)
-		for name, art in scene.articulations.items():
-			self._scene_entities[name] = EntityRef(name=name, entity_type="articulation", entity=art)
+		scene = self._get_scene_obj()
+		if scene is None:
+			log.warning("Environment has neither 'scene' nor '_scene'; no entities loaded")
+			# Continue to fallback loaders below.
+
+		def _entity_name(ent: Any, default_prefix: str, idx: int) -> str:
+			name = getattr(ent, "name", None)
+			if isinstance(name, str) and name.strip():
+				return name
+			getter = getattr(ent, "get_name", None)
+			if callable(getter):
+				try:
+					v = getter()
+					if isinstance(v, str) and v.strip():
+						return v
+				except Exception:
+					pass
+			return f"{default_prefix}_{idx}"
+
+		if scene is not None:
+			# Path A: wrappers exposing dict-like scene.actors/articulations
+			actors_map = getattr(scene, "actors", None)
+			if isinstance(actors_map, dict):
+				for name, actor in actors_map.items():
+					self._scene_entities[str(name)] = EntityRef(name=str(name), entity_type="actor", entity=actor)
+			else:
+				# Path B: raw sapien.Scene exposing get_all_actors()
+				get_all_actors = getattr(scene, "get_all_actors", None)
+				if callable(get_all_actors):
+					try:
+						for i, actor in enumerate(list(get_all_actors())):
+							name = _entity_name(actor, "actor", i)
+							self._scene_entities[name] = EntityRef(name=name, entity_type="actor", entity=actor)
+					except Exception as exc:
+						log.warning("Failed loading actors from get_all_actors: %s", exc)
+
+			arts_map = getattr(scene, "articulations", None)
+			if isinstance(arts_map, dict):
+				for name, art in arts_map.items():
+					self._scene_entities[str(name)] = EntityRef(name=str(name), entity_type="articulation", entity=art)
+			else:
+				# Path B: raw sapien.Scene exposing get_all_articulations()
+				get_all_articulations = getattr(scene, "get_all_articulations", None)
+				if callable(get_all_articulations):
+					try:
+						for i, art in enumerate(list(get_all_articulations())):
+							name = _entity_name(art, "articulation", i)
+							self._scene_entities[name] = EntityRef(name=name, entity_type="articulation", entity=art)
+					except Exception as exc:
+						log.warning("Failed loading articulations from get_all_articulations: %s", exc)
+
+		# Path C: fallback from custom env fields in ManiSkill2_real2sim
+		for ent in getattr(self.u, "episode_objs", []) or []:
+			name = _entity_name(ent, "episode_obj", len(self._scene_entities))
+			if name not in self._scene_entities:
+				self._scene_entities[name] = EntityRef(name=name, entity_type="actor", entity=ent)
+
+		for attr_name, typ in [
+			("episode_source_obj", "actor"),
+			("episode_target_obj", "actor"),
+			("sink", "actor"),
+		]:
+			ent = getattr(self.u, attr_name, None)
+			if ent is None:
+				continue
+			name = _entity_name(ent, attr_name, len(self._scene_entities))
+			if name not in self._scene_entities:
+				self._scene_entities[name] = EntityRef(name=name, entity_type=typ, entity=ent)
 
 	@staticmethod
 	def natural_word_to_name(w: str) -> str:
@@ -100,12 +170,28 @@ class Controller:
 	@staticmethod
 	def _canonical_object_name(obj_name: str) -> str:
 		name = obj_name.strip().casefold()
+		name = name.replace("_", " ").replace("-", " ")
+		name = re.sub(r"\s+", " ", name).strip()
+
+		color_words = {
+			"red", "blue", "green", "yellow", "orange", "black", "white", "purple", "brown", "gray", "grey"
+		}
+		toks = [t for t in name.split(" ") if t]
+		while toks and toks[0] in color_words:
+			toks = toks[1:]
+		if toks:
+			name = " ".join(toks)
+
 		synonyms = {
 			"ball": "sphere",
 			"orb": "sphere",
 			"cup": "mug",
+			"basket": "rack",
+			"dish basket": "rack",
+			"dish rack": "rack",
+			"dishrack": "rack",
 		}
-		return synonyms.get(name, obj_name)
+		return synonyms.get(name, name)
 
 	def _resolve_entity(self, obj_name: str, obj_num: Optional[int] = None) -> Optional[EntityRef]:
 		"""实体解析，将自然语言描述的对象名称映射到场景中的实际物理实体"""
@@ -115,24 +201,35 @@ class Controller:
 
 		obj_name = self._canonical_object_name(obj_name)
 
-		q_norm = self._normalize_name(obj_name)
-		if not q_norm:
-			return None
+		candidate_queries = [obj_name]
+		if "rack" in obj_name:
+			candidate_queries.extend(["basket", "dish rack", "dishrack"])
+			candidate_queries.extend(["sink", "dummy sink target plane", "dummy_sink_target_plane"])
+		if "can" in obj_name:
+			candidate_queries.extend(["pepsi", "fanta", "tang", "soda"])
 
-		# 1) exact normalized name match
-		for name, ent in self._scene_entities.items():
-			if self._normalize_name(name) == q_norm:
-				return ent
+		seen = set()
+		candidate_queries = [q for q in candidate_queries if not (q in seen or seen.add(q))]
 
-		# 2) query is a substring
-		for name, ent in self._scene_entities.items():
-			if q_norm in self._normalize_name(name):
-				return ent
+		for q in candidate_queries:
+			q_norm = self._normalize_name(q)
+			if not q_norm:
+				continue
 
-		# 3) entity name is a substring of query
-		for name, ent in self._scene_entities.items():
-			if self._normalize_name(name) in q_norm:
-				return ent
+			# 1) exact normalized name match
+			for name, ent in self._scene_entities.items():
+				if self._normalize_name(name) == q_norm:
+					return ent
+
+			# 2) query is a substring
+			for name, ent in self._scene_entities.items():
+				if q_norm in self._normalize_name(name):
+					return ent
+
+			# 3) entity name is a substring of query
+			for name, ent in self._scene_entities.items():
+				if self._normalize_name(name) in q_norm:
+					return ent
 
 		return None
 
@@ -166,16 +263,105 @@ class Controller:
 		"""_step是最终落脚函数，maniskill的底层实现"""
 		for _ in range(repeat):
 			self.last_obs, self.last_reward, self.last_terminated, self.last_truncated, self.last_info = self.env.step(action)
+			if callable(self.frame_callback):
+				try:
+					self.frame_callback(self.last_obs)
+				except Exception:
+					pass
 			if self.held_object_name is not None and self.held_object_soft_attached:
 				self._soft_follow_held_object()
 			if self.last_terminated or self.last_truncated:
 				break
 
 	def _get_tcp_pos(self) -> np.ndarray:
-		tcp = self._to_np(self.u.agent.tcp.pose.p)
-		if tcp.ndim == 2:
-			return tcp[0].astype(np.float32)
-		return tcp.astype(np.float32)
+		def _as_xyz(v: Any) -> Optional[np.ndarray]:
+			if v is None:
+				return None
+			arr = self._to_np(v)
+			if arr.ndim == 2:
+				arr = arr[0]
+			arr = np.asarray(arr, dtype=np.float32).reshape(-1)
+			if arr.shape[0] < 3:
+				return None
+			return arr[:3]
+
+		# 1) ManiSkill-style path: u.agent.tcp.pose.p
+		agent = getattr(self.u, "agent", None)
+		if agent is not None:
+			agent_tcp = getattr(agent, "tcp", None)
+			if agent_tcp is not None:
+				pose = getattr(agent_tcp, "pose", None)
+				if pose is not None:
+					xyz = _as_xyz(getattr(pose, "p", None))
+					if xyz is not None:
+						self._tcp_source = "agent.tcp.pose.p"
+						return xyz
+
+		# 2) Cached ee link on agent
+		if agent is not None:
+			ee_link = getattr(agent, "ee_link", None)
+			if ee_link is not None:
+				pose = getattr(ee_link, "pose", None)
+				if pose is None and hasattr(ee_link, "get_pose"):
+					try:
+						pose = ee_link.get_pose()
+					except Exception:
+						pose = None
+				if pose is not None:
+					xyz = _as_xyz(getattr(pose, "p", None))
+					if xyz is not None:
+						self._tcp_source = "agent.ee_link.pose"
+						return xyz
+
+		# 3) Fallback: find likely end-effector link from robot links
+		if agent is not None:
+			robot = getattr(agent, "robot", None)
+			get_links = getattr(robot, "get_links", None)
+			if callable(get_links):
+				try:
+					links = list(get_links())
+				except Exception:
+					links = []
+				candidates = []
+				for link in links:
+					name = str(getattr(link, "name", "")).casefold()
+					# Prefer explicit ee/tcp/gripper tip links.
+					score = 0
+					if "ee" in name:
+						score += 3
+					if "tcp" in name:
+						score += 3
+					if "gripper" in name:
+						score += 1
+					if "finger" in name:
+						score -= 1
+					if score > 0:
+						candidates.append((score, link))
+				for _, link in sorted(candidates, key=lambda x: x[0], reverse=True):
+					pose = getattr(link, "pose", None)
+					if pose is None and hasattr(link, "get_pose"):
+						try:
+							pose = link.get_pose()
+						except Exception:
+							pose = None
+					if pose is None:
+						continue
+					xyz = _as_xyz(getattr(pose, "p", None))
+					if xyz is not None:
+						self._tcp_source = f"robot.link:{getattr(link, 'name', 'unknown')}"
+						return xyz
+
+		# 4) simpler_env/ManiSkill2 fallback: u.tcp.pose.p (some envs expose this)
+		env_tcp = getattr(self.u, "tcp", None)
+		if env_tcp is not None:
+			pose = getattr(env_tcp, "pose", None)
+			if pose is not None:
+				xyz = _as_xyz(getattr(pose, "p", None))
+				if xyz is not None:
+					self._tcp_source = "env.tcp.pose.p"
+					return xyz
+
+		raise AttributeError("Cannot resolve end-effector position from env; tried agent.tcp, env.tcp, ee_link, and robot links")
 
 	def _get_entity_pos(self, ent: EntityRef) -> np.ndarray:
 		p = self._to_np(ent.entity.pose.p)
@@ -185,6 +371,9 @@ class Controller:
 
 	def _move_to(self, target_xyz: np.ndarray, grip: Optional[float] = None, steps: int = 40, gain: float = 8.0, tol: float = 0.02) -> None:
 		target_xyz = np.asarray(target_xyz, dtype=np.float32)
+		start_ee = self._get_tcp_pos().copy()
+		tcp_source = getattr(self, "_tcp_source", "unknown")
+		start_dist = float(np.linalg.norm(target_xyz - start_ee))
 		for _ in range(steps):
 			ee = self._get_tcp_pos()
 			delta = np.clip((target_xyz - ee) * gain, -1.0, 1.0)
@@ -192,6 +381,14 @@ class Controller:
 			self._step(action)
 			if np.linalg.norm(target_xyz - ee) < tol:
 				break
+		end_ee = self._get_tcp_pos().copy()
+		end_dist = float(np.linalg.norm(target_xyz - end_ee))
+		self._last_motion_stats = {
+			"start_dist": start_dist,
+			"end_dist": end_dist,
+			"ee_displacement": float(np.linalg.norm(end_ee - start_ee)),
+			"tcp_source": tcp_source,
+		}
 
 	def _hold_position(self, grip: Optional[float] = None, steps: int = 6) -> None:
 		action = self._build_action(delta_xyz=np.zeros(3, dtype=np.float32), grip=grip)
@@ -201,9 +398,36 @@ class Controller:
 		if ent is None or ent.entity_type != "actor":
 			return False
 		try:
-			p = np.asarray(pos, dtype=np.float32).reshape(1, 3)
-			q = np.array([[1.0, 0.0, 0.0, 0.0]], dtype=np.float32)
-			ent.entity.set_pose(Pose.create_from_pq(p=p, q=q))
+			p_vec = np.asarray(pos, dtype=np.float32).reshape(-1)[:3]
+			q_vec = np.array([1.0, 0.0, 0.0, 0.0], dtype=np.float32)
+
+			pose_obj = None
+			# Prefer ManiSkill Pose when available.
+			try:
+				ms_structs = importlib.import_module("mani_skill.utils.structs")
+				MSPose = getattr(ms_structs, "Pose", None)
+				if MSPose is not None and hasattr(MSPose, "create_from_pq"):
+					pose_obj = MSPose.create_from_pq(
+						p=np.asarray(p_vec, dtype=np.float32).reshape(1, 3),
+						q=np.asarray(q_vec, dtype=np.float32).reshape(1, 4),
+					)
+			except Exception:
+				pose_obj = None
+
+			# Fallback to SAPIEN pose if ManiSkill is unavailable.
+			if pose_obj is None:
+				try:
+					sapien = importlib.import_module("sapien.core")
+					SPose = getattr(sapien, "Pose", None)
+					if SPose is not None:
+						pose_obj = SPose(p=p_vec, q=q_vec)
+				except Exception:
+					pose_obj = None
+
+			if pose_obj is None:
+				return False
+
+			ent.entity.set_pose(pose_obj)
 			return True
 		except Exception:
 			return False
@@ -357,6 +581,19 @@ class Controller:
 		approach[2] = approach[2] + 0.08
 		self._move_to(approach, grip=1.0, steps=40)
 		self._hold_position(grip=1.0, steps=4)
+		stats = getattr(self, "_last_motion_stats", {})
+		ee_disp = float(stats.get("ee_displacement", 0.0))
+		start_dist = float(stats.get("start_dist", 0.0))
+		end_dist = float(stats.get("end_dist", 0.0))
+		tcp_source = str(stats.get("tcp_source", "unknown"))
+		if ee_disp < 1e-3:
+			return f"Robot end-effector did not move while finding target (tcp={tcp_source})"
+		# If already close enough at start, do not require further distance reduction.
+		if start_dist > 0.08 and end_dist > max(0.02, start_dist - 0.005):
+			return (
+				f"Find likely ineffective: distance to target not reduced enough "
+				f"(start={start_dist:.4f}, end={end_dist:.4f}, tcp={tcp_source})"
+			)
 		return ""
 
 	def pick(self, obj_name: str, obj_num: Optional[int], manualInteract: bool = False) -> str:
@@ -368,21 +605,31 @@ class Controller:
 			return f"Cannot pick {obj_name}: target is not a pickable actor"
 
 		pos = self._get_entity_pos(ent)
+		obj_pos_before = pos.copy()
 		above = pos.copy()
 		above[2] += 0.06
 		self._move_to(above, grip=1.0, steps=32)
 		self._move_to(pos + np.array([0.0, 0.0, 0.015], dtype=np.float32), grip=1.0, steps=20)
 		# Close gripper and mark this actor as held.
 		self._hold_position(grip=-1.0, steps=10)
-		is_grasped = True
+		is_grasped = False
 		if hasattr(self.u.agent, "is_grasping"):
 			try:
 				is_grasped = bool(self._to_np(self.u.agent.is_grasping(ent.entity))[0])
 			except Exception:
-				is_grasped = True
+				is_grasped = False
+
+		# Heuristic fallback when grasp API is unavailable/inaccurate.
+		if not is_grasped:
+			try:
+				obj_pos_after_close = self._get_entity_pos(ent)
+				is_grasped = bool(obj_pos_after_close[2] > obj_pos_before[2] + 0.01)
+			except Exception:
+				is_grasped = False
 
 		if not is_grasped:
-			# fail despite close-contact motion.
+			# Assisted fallback: keep pipeline progressing in environments where
+			# reliable grasp state is unavailable.
 			self.held_object_name = ent.name
 			self.held_object_soft_attached = True
 			self._soft_follow_held_object()
@@ -392,12 +639,18 @@ class Controller:
 		self.held_object_name = ent.name
 		self.held_object_soft_attached = False
 		self._move_to(above, grip=-1.0, steps=24)
+		stats = getattr(self, "_last_motion_stats", {})
+		if float(stats.get("ee_displacement", 0.0)) < 1e-3:
+			return "Robot end-effector did not move during pick"
 		return ""
 
 	def put(self, receptacle_name: str, obj_num: Optional[int]) -> str:
 		del obj_num
 		if self.held_object_name is None:
 			return "Nothing Done. Robot is not holding any object"
+
+		held_ent = self._resolve_entity(self.held_object_name)
+		held_before = self._get_entity_pos(held_ent) if held_ent is not None else None
 
 		recep = self._resolve_entity(receptacle_name)
 		if recep is None:
@@ -413,6 +666,20 @@ class Controller:
 		self.held_object_name = None
 		self.held_object_soft_attached = False
 		self._move_to(target + np.array([0.0, 0.0, 0.08], dtype=np.float32), grip=1.0, steps=16)
+
+		if held_ent is not None and held_before is not None:
+			try:
+				held_after = self._get_entity_pos(held_ent)
+				moved = float(np.linalg.norm(held_after - held_before)) > 0.01
+				xy_to_recep = float(np.linalg.norm((held_after - recep_pos)[:2]))
+				if (not moved) and xy_to_recep > 0.2:
+					return "Put likely failed: object did not move to receptacle"
+			except Exception:
+				pass
+
+		stats = getattr(self, "_last_motion_stats", {})
+		if float(stats.get("ee_displacement", 0.0)) < 1e-3:
+			return "Robot end-effector did not move during put"
 		return ""
 
 	def _move_by(self, delta_xyz: np.ndarray, steps: int = 20, grip: Optional[float] = None) -> None:

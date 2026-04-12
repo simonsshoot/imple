@@ -154,10 +154,36 @@ class Agents:
     def pick_object_token(payload: str) -> str:
       if not payload:
         return ""
-      p = payload.casefold()
+      p = payload.casefold().replace("_", " ").replace("-", " ")
+      p = re.sub(r"\s+", " ", p).strip()
+
+      color_words = {
+        "red", "blue", "green", "yellow", "orange", "black", "white", "purple", "brown", "gray", "grey"
+      }
+      toks = [t for t in re.split(r"\s+", p) if t]
+      while toks and toks[0] in color_words:
+        toks = toks[1:]
+      if toks:
+        p = " ".join(toks)
+
+      # Normalize common receptacle synonyms before matching.
+      synonym_groups = [
+        ["basket", "rack", "dish rack", "dish_rack", "dishrack"],
+        ["can", "soda", "pepsi", "fanta", "tang"],
+      ]
+      for group in synonym_groups:
+        if any(k in p for k in group):
+          for obj in scene_lc:
+            if any(k in obj for k in group):
+              return obj
+
       for obj in scene_lc:
         if obj and obj in p:
           return obj
+
+      if any(k in p for k in ["basket", "rack", "dish rack", "dishrack"]):
+        return "basket"
+
       toks = [t for t in re.split(r"\s+", p) if t]
       return toks[-1] if toks else ""
 

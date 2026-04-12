@@ -4,7 +4,7 @@ import os
 import re
 import traceback
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Optional, Tuple
+from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple
 
 import numpy as np
 from openai import OpenAI
@@ -427,7 +427,11 @@ def gen_low_level_plan(high_level_plan: str) -> List[str]:
   print(f"[gen_low_level_plan] high_level_plan:\n{high_level_plan}\n=> low_level_plan:\n{low_level_plan}")
   return low_level_plan
 
-def execute_low_level_plan(planner: Any, low_level_plan: Optional[List[str] | str]) -> Dict[str, Any]:
+def execute_low_level_plan(
+  planner: Any,
+  low_level_plan: Optional[List[str] | str],
+  step_callback: Optional[Callable[[int, str, Dict[str, Any]], None]] = None,
+) -> Dict[str, Any]:
   """执行底层计划的函数,接收一个低层计划和一个控制器实例，解析计划中的动作指令，并调用控制器的方法来执行这些动作。"""
   if not hasattr(planner, "llm_skill_interact"):
     raise AttributeError("planner must provide llm_skill_interact(instruction)")
@@ -462,6 +466,11 @@ def execute_low_level_plan(planner: Any, low_level_plan: Optional[List[str] | st
           "errorMessage": ret_dict.get("errorMessage", ""),
         }
       )
+      if step_callback is not None:
+        try:
+          step_callback(i, step, ret_dict)
+        except Exception:
+          traceback.print_exc()
       print(ret_dict)
       print("-" * 50)
     except Exception as exc:
