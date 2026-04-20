@@ -1,0 +1,14 @@
+{
+  "meta": {
+    "created_at": "2026-04-12T15:23:22.893068Z",
+    "source": "ManiSkill tasks",
+    "task_categories": [
+      "mobile_manipulation"
+    ],
+    "model": "deepseek-chat",
+    "samples_per_scene": 2,
+    "scene_count": 1,
+    "record_count": 0
+  },
+  "data": []
+}

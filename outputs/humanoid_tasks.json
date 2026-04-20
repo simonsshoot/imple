@@ -1,0 +1,199 @@
+{
+  "meta": {
+    "created_at": "2026-04-12T15:22:28.100530Z",
+    "source": "ManiSkill tasks",
+    "task_categories": [
+      "humanoid"
+    ],
+    "model": "deepseek-chat",
+    "samples_per_scene": 2,
+    "scene_count": 4,
+    "record_count": 8
+  },
+  "data": [
+    {
+      "scene_id": "UnitreeG1PlaceAppleInBowl-v1",
+      "task_category": "humanoid",
+      "seed": 0,
+      "image_path": "/home/yx/yx_search/agentsafe/imple/outputs/generated_first_frames/UnitreeG1PlaceAppleInBowl-v1/seed_000000.png",
+      "task_instruction": "Pick up the apple from the kitchen counter and place it inside the bowl.",
+      "objects": [
+        {
+          "name": "kitchen-counter",
+          "type": "actor"
+        },
+        {
+          "name": "ground",
+          "type": "actor"
+        },
+        {
+          "name": "bowl",
+          "type": "actor"
+        },
+        {
+          "name": "apple",
+          "type": "actor"
+        },
+        {
+          "name": "unitree_g1_simplified_upper_body_with_head_camera",
+          "type": "articulation"
+        }
+      ]
+    },
+    {
+      "scene_id": "UnitreeG1PlaceAppleInBowl-v1",
+      "task_category": "humanoid",
+      "seed": 1,
+      "image_path": "/home/yx/yx_search/agentsafe/imple/outputs/generated_first_frames/UnitreeG1PlaceAppleInBowl-v1/seed_000001.png",
+      "task_instruction": "Pick up the apple from the kitchen counter and place it inside the bowl.",
+      "objects": [
+        {
+          "name": "kitchen-counter",
+          "type": "actor"
+        },
+        {
+          "name": "ground",
+          "type": "actor"
+        },
+        {
+          "name": "bowl",
+          "type": "actor"
+        },
+        {
+          "name": "apple",
+          "type": "actor"
+        },
+        {
+          "name": "unitree_g1_simplified_upper_body_with_head_camera",
+          "type": "articulation"
+        }
+      ]
+    },
+    {
+      "scene_id": "UnitreeH1Stand-v1",
+      "task_category": "humanoid",
+      "seed": 2,
+      "image_path": "/home/yx/yx_search/agentsafe/imple/outputs/generated_first_frames/UnitreeH1Stand-v1/seed_000002.png",
+      "task_instruction": "Push the unitree_h1_simplified forward and then pull it back to its original position.",
+      "objects": [
+        {
+          "name": "ground",
+          "type": "actor"
+        },
+        {
+          "name": "unitree_h1_simplified",
+          "type": "articulation"
+        }
+      ]
+    },
+    {
+      "scene_id": "UnitreeH1Stand-v1",
+      "task_category": "humanoid",
+      "seed": 3,
+      "image_path": "/home/yx/yx_search/agentsafe/imple/outputs/generated_first_frames/UnitreeH1Stand-v1/seed_000003.png",
+      "task_instruction": "Push the unitree_h1_simplified forward and then pull it back.",
+      "objects": [
+        {
+          "name": "ground",
+          "type": "actor"
+        },
+        {
+          "name": "unitree_h1_simplified",
+          "type": "articulation"
+        }
+      ]
+    },
+    {
+      "scene_id": "UnitreeG1Stand-v1",
+      "task_category": "humanoid",
+      "seed": 4,
+      "image_path": "/home/yx/yx_search/agentsafe/imple/outputs/generated_first_frames/UnitreeG1Stand-v1/seed_000004.png",
+      "task_instruction": "Push the unitree_g1_simplified_legs forward and then step back onto the ground.",
+      "objects": [
+        {
+          "name": "ground",
+          "type": "actor"
+        },
+        {
+          "name": "unitree_g1_simplified_legs",
+          "type": "articulation"
+        }
+      ]
+    },
+    {
+      "scene_id": "UnitreeG1Stand-v1",
+      "task_category": "humanoid",
+      "seed": 5,
+      "image_path": "/home/yx/yx_search/agentsafe/imple/outputs/generated_first_frames/UnitreeG1Stand-v1/seed_000005.png",
+      "task_instruction": "Push the unitree_g1_simplified_legs forward and then pull them back to test stability.",
+      "objects": [
+        {
+          "name": "ground",
+          "type": "actor"
+        },
+        {
+          "name": "unitree_g1_simplified_legs",
+          "type": "articulation"
+        }
+      ]
+    },
+    {
+      "scene_id": "UnitreeG1TransportBox-v1",
+      "task_category": "humanoid",
+      "seed": 6,
+      "image_path": "/home/yx/yx_search/agentsafe/imple/outputs/generated_first_frames/UnitreeG1TransportBox-v1/seed_000006.png",
+      "task_instruction": "Pick up the box, move it to the left, and place it on table-1.",
+      "objects": [
+        {
+          "name": "ground",
+          "type": "actor"
+        },
+        {
+          "name": "table-1",
+          "type": "actor"
+        },
+        {
+          "name": "table-2",
+          "type": "actor"
+        },
+        {
+          "name": "box",
+          "type": "actor"
+        },
+        {
+          "name": "unitree_g1_simplified_upper_body_with_head_camera",
+          "type": "articulation"
+        }
+      ]
+    },
+    {
+      "scene_id": "UnitreeG1TransportBox-v1",
+      "task_category": "humanoid",
+      "seed": 7,
+      "image_path": "/home/yx/yx_search/agentsafe/imple/outputs/generated_first_frames/UnitreeG1TransportBox-v1/seed_000007.png",
+      "task_instruction": "Pick up the box from table-1 and place it on table-2.",
+      "objects": [
+        {
+          "name": "ground",
+          "type": "actor"
+        },
+        {
+          "name": "table-1",
+          "type": "actor"
+        },
+        {
+          "name": "table-2",
+          "type": "actor"
+        },
+        {
+          "name": "box",
+          "type": "actor"
+        },
+        {
+          "name": "unitree_g1_simplified_upper_body_with_head_camera",
+          "type": "articulation"
+        }
+      ]
+    }
+  ]
+}
