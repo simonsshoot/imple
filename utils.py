@@ -91,10 +91,15 @@ def gen_low_level_plan(high_level_plan: str) -> List[str]:
     "find",
     "pick",
     "put",
+    "insert",
     "move_left",
     "move_right",
     "move_forward",
     "move_back",
+    "rotate_left",
+    "rotate_right",
+    "rotate_up",
+    "rotate_down",
     "open",
     "close",
     "slice",
@@ -119,7 +124,12 @@ def gen_low_level_plan(high_level_plan: str) -> List[str]:
     (r"\b(move|shift|go)\s+(to\s+)?(the\s+)?(back|backward|backwards)\b", "move_back"),
     (r"\b(find|go to|walk to|approach|locate|search|face)\b", "find"),
     (r"\b(pick up|pickup|pick|grab|grasp|take|collect)\b", "pick"),
-    (r"\b(place|put|insert|drop into|put down on|set on)\b", "put"),
+    (r"\b(insert|plug|slot in|fit into)\b", "insert"),
+    (r"\b(place|put|drop into|put down on|set on)\b", "put"),
+    (r"\b(rotate|turn)\s+(to\s+)?(the\s+)?left\b", "rotate_left"),
+    (r"\b(rotate|turn)\s+(to\s+)?(the\s+)?right\b", "rotate_right"),
+    (r"\b(rotate|tilt)\s+(up|upward)\b", "rotate_up"),
+    (r"\b(rotate|tilt)\s+(down|downward)\b", "rotate_down"),
     (r"\b(open)\b", "open"),
     (r"\b(close|shut)\b", "close"),
     (r"\b(slice|cut|chop)\b", "slice"),
@@ -160,8 +170,17 @@ def gen_low_level_plan(high_level_plan: str) -> List[str]:
     "cube",
     "sphere",
     "ball",
+    "peg",
+    "hole",
+    "slot",
     "box",
     "bin",
+    "charger",
+    "receptacle",
+    "tool",
+    "tee",
+    "region",
+    "site",
     "mug",
     "cup",
     "bottle",
@@ -310,7 +329,7 @@ def gen_low_level_plan(high_level_plan: str) -> List[str]:
     if mapped_action is None:
       continue
 
-    if mapped_action in {"move_left", "move_right", "move_forward", "move_back"}:
+    if mapped_action in {"move_left", "move_right", "move_forward", "move_back", "rotate_left", "rotate_right", "rotate_up", "rotate_down"}:
       low_level_plan.append(mapped_action)
       continue
 
@@ -332,12 +351,21 @@ def gen_low_level_plan(high_level_plan: str) -> List[str]:
         low_level_plan.append("pick ball")
         continue
 
-    if mapped_action == "put":
+    if mapped_action in {"put", "insert"}:
       if "bin" in line_l:
-        low_level_plan.append("put bin")
+        low_level_plan.append(f"{mapped_action} bin")
         continue
       if "box" in line_l:
-        low_level_plan.append("put box")
+        low_level_plan.append(f"{mapped_action} box")
+        continue
+      if "receptacle" in line_l:
+        low_level_plan.append(f"{mapped_action} receptacle")
+        continue
+      if "hole" in line_l:
+        low_level_plan.append(f"{mapped_action} hole")
+        continue
+      if "goal" in line_l and "region" in line_l:
+        low_level_plan.append(f"{mapped_action} goal region")
         continue
 
     if mapped_action == "find":
@@ -385,7 +413,6 @@ def gen_low_level_plan(high_level_plan: str) -> List[str]:
   low_level_plan = dedup_plan
 
   canon_map = {
-    "ball": "sphere",
     "orb": "sphere",
   }
   canonicalized: List[str] = []

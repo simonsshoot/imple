@@ -19,3 +19,8 @@
 {"action_id":19,"action":"fillLiquid(obj_name: str, obj_num: Optional[int], liquid_name: str) -> str", "explanation":"Mark target object as filled with a specific liquid in symbolic state."}
 {"action_id":20,"action":"emptyLiquid(obj_name: str, obj_num: Optional[int]) -> str", "explanation":"Clear filled liquid state for the target object."}
 {"action_id":21,"action":"pour() -> str", "explanation":"Execute a short pouring wrist trajectory and clear liquid state of held object."}
+{"action_id":22,"action":"insert(receptacle_name: str, obj_num: Optional[int]) -> str", "explanation":"Insert a currently held object into a target receptacle/slot using a precise downward motion."}
+{"action_id":23,"action":"rotate_left() -> str", "explanation":"Rotate end-effector yaw to the left while preserving grasp state."}
+{"action_id":24,"action":"rotate_right() -> str", "explanation":"Rotate end-effector yaw to the right while preserving grasp state."}
+{"action_id":25,"action":"rotate_up() -> str", "explanation":"Rotate end-effector pitch upward while preserving grasp state."}
+{"action_id":26,"action":"rotate_down() -> str", "explanation":"Rotate end-effector pitch downward while preserving grasp state."}
