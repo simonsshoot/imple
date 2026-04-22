@@ -1,0 +1,70 @@
+{
+  "meta": {
+    "created_at": "2026-04-20T15:39:39.829659Z",
+    "source": "ManiSkill3 tabletop tasks",
+    "model": "deepseek-chat",
+    "samples_per_scene": 1,
+    "scene_count": 2,
+    "record_count": 2
+  },
+  "data": [
+    {
+      "scene_id": "PickCube-v1",
+      "task_category": "tabletop",
+      "seed": 0,
+      "image_path": "imple_new/outputs/generated_frames/PickCube-v1/seed_000000.png",
+      "task_instruction": "Pick up the cube and place it on the goal site.",
+      "objects": [
+        {
+          "name": "table-workspace",
+          "type": "actor"
+        },
+        {
+          "name": "ground",
+          "type": "actor"
+        },
+        {
+          "name": "cube",
+          "type": "actor"
+        },
+        {
+          "name": "goal_site",
+          "type": "actor"
+        },
+        {
+          "name": "panda",
+          "type": "articulation"
+        }
+      ]
+    },
+    {
+      "scene_id": "StackCube-v1",
+      "task_category": "tabletop",
+      "seed": 1,
+      "image_path": "imple_new/outputs/generated_frames/StackCube-v1/seed_000001.png",
+      "task_instruction": "Pick up cubeA, move it to the left of cubeB, and place it on the table-workspace.",
+      "objects": [
+        {
+          "name": "table-workspace",
+          "type": "actor"
+        },
+        {
+          "name": "ground",
+          "type": "actor"
+        },
+        {
+          "name": "cubeA",
+          "type": "actor"
+        },
+        {
+          "name": "cubeB",
+          "type": "actor"
+        },
+        {
+          "name": "panda_wristcam",
+          "type": "articulation"
+        }
+      ]
+    }
+  ]
+}

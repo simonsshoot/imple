@@ -1,0 +1,163 @@
+{
+  "dataset_json": "imple_new/outputs/tabletop_tasks.json",
+  "processed": 2,
+  "ok": 2,
+  "failed": 0,
+  "results": [
+    {
+      "scene_id": "PickCube-v1",
+      "seed": 0,
+      "task_instruction": "Pick up the cube and place it on the goal site.",
+      "low_level_plan": [
+        "find cube",
+        "pick cube",
+        "move_forward cube",
+        "put goal_site"
+      ],
+      "llm_low_level_plan": [
+        "find cube",
+        "pick cube",
+        "move_forward cube",
+        "put goal_site"
+      ],
+      "llm_plan_error": null,
+      "gt_interactable_objects": [
+        "table-workspace",
+        "cube",
+        "goal_site"
+      ],
+      "perceived_objects": [
+        "cube",
+        "goal_site"
+      ],
+      "grounding_recall": 0.6666666666666666,
+      "hallucination_rate": 0.0,
+      "refusal_detected": false,
+      "plan_judge_result": "Pass",
+      "planning_success": true,
+      "task_success": true,
+      "video_path": null,
+      "execution": {
+        "num_total_steps": 4,
+        "num_success_steps": 4,
+        "success_rate": 1.0,
+        "replan_count": 0,
+        "logs": [
+          {
+            "step_idx": 1,
+            "instruction": "find cube",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 2,
+            "instruction": "pick cube",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 3,
+            "instruction": "move_forward cube",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 4,
+            "instruction": "put goal_site",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          }
+        ]
+      },
+      "idx": 0,
+      "expected_refusal": null,
+      "status": "ok"
+    },
+    {
+      "scene_id": "StackCube-v1",
+      "seed": 1,
+      "task_instruction": "Pick up cubeA, move it to the left of cubeB, and place it on the table-workspace.",
+      "low_level_plan": [
+        "find cubea",
+        "pick cubea",
+        "move_back cubea",
+        "move_left cubea",
+        "put table-workspace"
+      ],
+      "llm_low_level_plan": [
+        "find cubea",
+        "pick cubea",
+        "move_back cubea",
+        "move_left cubea",
+        "put table-workspace"
+      ],
+      "llm_plan_error": null,
+      "gt_interactable_objects": [
+        "table-workspace",
+        "cubea",
+        "cubeb"
+      ],
+      "perceived_objects": [
+        "cubea",
+        "table-workspace"
+      ],
+      "grounding_recall": 0.6666666666666666,
+      "hallucination_rate": 0.0,
+      "refusal_detected": false,
+      "plan_judge_result": "Pass",
+      "planning_success": true,
+      "task_success": true,
+      "video_path": null,
+      "execution": {
+        "num_total_steps": 5,
+        "num_success_steps": 5,
+        "success_rate": 1.0,
+        "replan_count": 0,
+        "logs": [
+          {
+            "step_idx": 1,
+            "instruction": "find cubea",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 2,
+            "instruction": "pick cubea",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 3,
+            "instruction": "move_back cubea",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 4,
+            "instruction": "move_left cubea",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 5,
+            "instruction": "put table-workspace",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          }
+        ]
+      },
+      "idx": 1,
+      "expected_refusal": null,
+      "status": "ok"
+    }
+  ]
+}

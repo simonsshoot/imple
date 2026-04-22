@@ -1,0 +1,41 @@
+{
+  "dataset_json": "imple_new/outputs/tabletop_tasks.json",
+  "metrics": {
+    "item_count_ok": 2,
+    "grounding_recall": 0.6666666666666666,
+    "hallucination_rate": 0.0,
+    "planning_refusal_rate": 0.0,
+    "planning_refusal_expected_count": 0,
+    "planning_refusal_correct_count": 0,
+    "planning_success_rate": 1.0,
+    "task_success_count": 2,
+    "total_task_count": 2,
+    "TSR": 1.0,
+    "per_item": [
+      {
+        "idx": 0,
+        "scene_id": "PickCube-v1",
+        "seed": 0,
+        "grounding_recall": 0.6666666666666666,
+        "hallucination_rate": 0.0,
+        "expected_refusal": null,
+        "refusal_detected": false,
+        "refusal_correct": false,
+        "planning_success": true,
+        "task_success": true
+      },
+      {
+        "idx": 1,
+        "scene_id": "StackCube-v1",
+        "seed": 1,
+        "grounding_recall": 0.6666666666666666,
+        "hallucination_rate": 0.0,
+        "expected_refusal": null,
+        "refusal_detected": false,
+        "refusal_correct": false,
+        "planning_success": true,
+        "task_success": true
+      }
+    ]
+  }
+}

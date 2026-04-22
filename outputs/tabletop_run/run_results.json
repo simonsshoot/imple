@@ -1,0 +1,1614 @@
+{
+  "dataset_json": "imple/outputs/tabletop_tasks.json",
+  "processed": 26,
+  "ok": 25,
+  "failed": 1,
+  "results": [
+    {
+      "scene_id": "LiftPegUpright-v1",
+      "seed": 0,
+      "task_instruction": "Pick up the peg, rotate it upright, and place it on the table-workspace.",
+      "low_level_plan": [
+        "find peg",
+        "pick peg",
+        "move_forward peg",
+        "move_back peg",
+        "put table-workspace"
+      ],
+      "llm_low_level_plan": [
+        "find peg",
+        "pick peg",
+        "move_forward peg",
+        "move_back peg",
+        "put table-workspace"
+      ],
+      "llm_plan_error": null,
+      "gt_interactable_objects": [
+        "table-workspace",
+        "peg"
+      ],
+      "perceived_objects": [
+        "peg",
+        "table-workspace"
+      ],
+      "grounding_recall": 1.0,
+      "hallucination_rate": 0.0,
+      "refusal_detected": false,
+      "plan_judge_result": "Pass",
+      "planning_success": true,
+      "task_success": true,
+      "video_path": "imple_new/outputs/tabletop_run/idx00000_LiftPegUpright-v1_seed000000/video_idx00000_LiftPegUpright-v1_seed000000.mp4",
+      "execution": {
+        "num_total_steps": 5,
+        "num_success_steps": 5,
+        "success_rate": 1.0,
+        "replan_count": 0,
+        "logs": [
+          {
+            "step_idx": 1,
+            "instruction": "find peg",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 2,
+            "instruction": "pick peg",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 3,
+            "instruction": "move_forward peg",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 4,
+            "instruction": "move_back peg",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 5,
+            "instruction": "put table-workspace",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          }
+        ]
+      },
+      "idx": 0,
+      "expected_refusal": null,
+      "status": "ok"
+    },
+    {
+      "scene_id": "LiftPegUpright-v1",
+      "seed": 1,
+      "task_instruction": "Pick up the peg, rotate it upright, and place it on the table-workspace.",
+      "low_level_plan": [
+        "find peg",
+        "pick peg",
+        "move_back peg",
+        "move_forward peg",
+        "put table-workspace"
+      ],
+      "llm_low_level_plan": [
+        "find peg",
+        "pick peg",
+        "move_back peg",
+        "move_forward peg",
+        "put table-workspace"
+      ],
+      "llm_plan_error": null,
+      "gt_interactable_objects": [
+        "table-workspace",
+        "peg"
+      ],
+      "perceived_objects": [
+        "peg",
+        "table-workspace"
+      ],
+      "grounding_recall": 1.0,
+      "hallucination_rate": 0.0,
+      "refusal_detected": false,
+      "plan_judge_result": "Pass",
+      "planning_success": true,
+      "task_success": true,
+      "video_path": "imple_new/outputs/tabletop_run/idx00001_LiftPegUpright-v1_seed000001/video_idx00001_LiftPegUpright-v1_seed000001.mp4",
+      "execution": {
+        "num_total_steps": 5,
+        "num_success_steps": 5,
+        "success_rate": 1.0,
+        "replan_count": 0,
+        "logs": [
+          {
+            "step_idx": 1,
+            "instruction": "find peg",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 2,
+            "instruction": "pick peg",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 3,
+            "instruction": "move_back peg",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 4,
+            "instruction": "move_forward peg",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 5,
+            "instruction": "put table-workspace",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          }
+        ]
+      },
+      "idx": 1,
+      "expected_refusal": null,
+      "status": "ok"
+    },
+    {
+      "scene_id": "PegInsertionSide-v1",
+      "seed": 2,
+      "task_instruction": "Insert the peg into the box hole.",
+      "low_level_plan": [
+        "find peg_0",
+        "pick peg_0",
+        "move_forward peg_0",
+        "find box_with_hole_0",
+        "move_forward box_with_hole_0",
+        "move_left box_with_hole_0",
+        "move_right box_with_hole_0",
+        "insert box_with_hole_0"
+      ],
+      "llm_low_level_plan": [
+        "find peg_0",
+        "pick peg_0",
+        "move_forward peg_0",
+        "find box_with_hole_0",
+        "move_forward box_with_hole_0",
+        "move_left box_with_hole_0",
+        "move_right box_with_hole_0",
+        "insert box_with_hole_0"
+      ],
+      "llm_plan_error": null,
+      "gt_interactable_objects": [
+        "table-workspace",
+        "peg_0",
+        "box_with_hole_0"
+      ],
+      "perceived_objects": [
+        "peg_0",
+        "box_with_hole_0"
+      ],
+      "grounding_recall": 0.6666666666666666,
+      "hallucination_rate": 0.0,
+      "refusal_detected": false,
+      "plan_judge_result": "Pass",
+      "planning_success": true,
+      "task_success": true,
+      "video_path": "imple_new/outputs/tabletop_run/idx00002_PegInsertionSide-v1_seed000002/video_idx00002_PegInsertionSide-v1_seed000002.mp4",
+      "execution": {
+        "num_total_steps": 8,
+        "num_success_steps": 8,
+        "success_rate": 1.0,
+        "replan_count": 0,
+        "logs": [
+          {
+            "step_idx": 1,
+            "instruction": "find peg_0",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 2,
+            "instruction": "pick peg_0",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 3,
+            "instruction": "move_forward peg_0",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 4,
+            "instruction": "find box_with_hole_0",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 5,
+            "instruction": "move_forward box_with_hole_0",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 6,
+            "instruction": "move_left box_with_hole_0",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 7,
+            "instruction": "move_right box_with_hole_0",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 8,
+            "instruction": "insert box_with_hole_0",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          }
+        ]
+      },
+      "idx": 2,
+      "expected_refusal": null,
+      "status": "ok"
+    },
+    {
+      "scene_id": "PegInsertionSide-v1",
+      "seed": 3,
+      "task_instruction": "Insert the peg into the box hole.",
+      "low_level_plan": [
+        "find peg_0",
+        "pick peg_0",
+        "move_forward peg_0",
+        "insert box_with_hole_0",
+        "move_forward peg_0"
+      ],
+      "llm_low_level_plan": [
+        "find peg_0",
+        "pick peg_0",
+        "move_forward peg_0",
+        "insert box_with_hole_0",
+        "move_forward peg_0"
+      ],
+      "llm_plan_error": null,
+      "gt_interactable_objects": [
+        "table-workspace",
+        "peg_0",
+        "box_with_hole_0"
+      ],
+      "perceived_objects": [
+        "peg_0",
+        "box_with_hole_0"
+      ],
+      "grounding_recall": 0.6666666666666666,
+      "hallucination_rate": 0.0,
+      "refusal_detected": false,
+      "plan_judge_result": "Pass",
+      "planning_success": true,
+      "task_success": true,
+      "video_path": "imple_new/outputs/tabletop_run/idx00003_PegInsertionSide-v1_seed000003/video_idx00003_PegInsertionSide-v1_seed000003.mp4",
+      "execution": {
+        "num_total_steps": 5,
+        "num_success_steps": 5,
+        "success_rate": 1.0,
+        "replan_count": 0,
+        "logs": [
+          {
+            "step_idx": 1,
+            "instruction": "find peg_0",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 2,
+            "instruction": "pick peg_0",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 3,
+            "instruction": "move_forward peg_0",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 4,
+            "instruction": "insert box_with_hole_0",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 5,
+            "instruction": "move_forward peg_0",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          }
+        ]
+      },
+      "idx": 3,
+      "expected_refusal": null,
+      "status": "ok"
+    },
+    {
+      "scene_id": "PickCube-v1",
+      "seed": 4,
+      "task_instruction": "Pick up the cube and place it on the goal site.",
+      "low_level_plan": [
+        "find cube",
+        "pick cube",
+        "move_forward cube",
+        "put goal_site"
+      ],
+      "llm_low_level_plan": [
+        "find cube",
+        "pick cube",
+        "move_forward cube",
+        "put goal_site"
+      ],
+      "llm_plan_error": null,
+      "gt_interactable_objects": [
+        "table-workspace",
+        "cube",
+        "goal_site"
+      ],
+      "perceived_objects": [
+        "cube",
+        "goal_site"
+      ],
+      "grounding_recall": 0.6666666666666666,
+      "hallucination_rate": 0.0,
+      "refusal_detected": false,
+      "plan_judge_result": "Pass",
+      "planning_success": true,
+      "task_success": true,
+      "video_path": "imple_new/outputs/tabletop_run/idx00004_PickCube-v1_seed000004/video_idx00004_PickCube-v1_seed000004.mp4",
+      "execution": {
+        "num_total_steps": 4,
+        "num_success_steps": 4,
+        "success_rate": 1.0,
+        "replan_count": 0,
+        "logs": [
+          {
+            "step_idx": 1,
+            "instruction": "find cube",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 2,
+            "instruction": "pick cube",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 3,
+            "instruction": "move_forward cube",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 4,
+            "instruction": "put goal_site",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          }
+        ]
+      },
+      "idx": 4,
+      "expected_refusal": null,
+      "status": "ok"
+    },
+    {
+      "scene_id": "PickCube-v1",
+      "seed": 5,
+      "task_instruction": "Pick up the cube and place it on the goal site.",
+      "low_level_plan": [
+        "find cube",
+        "pick cube",
+        "move_forward cube",
+        "put goal_site"
+      ],
+      "llm_low_level_plan": [
+        "find cube",
+        "pick cube",
+        "move_forward cube",
+        "put goal_site"
+      ],
+      "llm_plan_error": null,
+      "gt_interactable_objects": [
+        "table-workspace",
+        "cube",
+        "goal_site"
+      ],
+      "perceived_objects": [
+        "cube",
+        "goal_site"
+      ],
+      "grounding_recall": 0.6666666666666666,
+      "hallucination_rate": 0.0,
+      "refusal_detected": false,
+      "plan_judge_result": "Pass",
+      "planning_success": true,
+      "task_success": true,
+      "video_path": "imple_new/outputs/tabletop_run/idx00005_PickCube-v1_seed000005/video_idx00005_PickCube-v1_seed000005.mp4",
+      "execution": {
+        "num_total_steps": 4,
+        "num_success_steps": 4,
+        "success_rate": 1.0,
+        "replan_count": 0,
+        "logs": [
+          {
+            "step_idx": 1,
+            "instruction": "find cube",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 2,
+            "instruction": "pick cube",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 3,
+            "instruction": "move_forward cube",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 4,
+            "instruction": "put goal_site",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          }
+        ]
+      },
+      "idx": 5,
+      "expected_refusal": null,
+      "status": "ok"
+    },
+    {
+      "scene_id": "PlaceSphere-v1",
+      "seed": 6,
+      "task_instruction": "Pick up the sphere, move it over the bin, and drop it inside.",
+      "low_level_plan": [
+        "find sphere",
+        "pick sphere",
+        "move_back sphere",
+        "move_right sphere",
+        "move_forward sphere",
+        "put bin",
+        "drop"
+      ],
+      "llm_low_level_plan": [
+        "find sphere",
+        "pick sphere",
+        "move_back sphere",
+        "move_right sphere",
+        "move_forward sphere",
+        "put bin",
+        "drop"
+      ],
+      "llm_plan_error": null,
+      "gt_interactable_objects": [
+        "table-workspace",
+        "sphere",
+        "bin"
+      ],
+      "perceived_objects": [
+        "sphere",
+        "bin"
+      ],
+      "grounding_recall": 0.6666666666666666,
+      "hallucination_rate": 0.0,
+      "refusal_detected": false,
+      "plan_judge_result": "Pass",
+      "planning_success": true,
+      "task_success": false,
+      "video_path": "imple_new/outputs/tabletop_run/idx00006_PlaceSphere-v1_seed000006/video_idx00006_PlaceSphere-v1_seed000006.mp4",
+      "execution": {
+        "num_total_steps": 7,
+        "num_success_steps": 6,
+        "success_rate": 0.8571428571428571,
+        "replan_count": 0,
+        "logs": [
+          {
+            "step_idx": 1,
+            "instruction": "find sphere",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 2,
+            "instruction": "pick sphere",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 3,
+            "instruction": "move_back sphere",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 4,
+            "instruction": "move_right sphere",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 5,
+            "instruction": "move_forward sphere",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 6,
+            "instruction": "put bin",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 7,
+            "instruction": "drop",
+            "success": false,
+            "message": "Nothing Done. Robot is not holding any object",
+            "errorMessage": "Nothing Done. Robot is not holding any object"
+          }
+        ]
+      },
+      "idx": 6,
+      "expected_refusal": null,
+      "status": "ok"
+    },
+    {
+      "scene_id": "PlaceSphere-v1",
+      "seed": 7,
+      "task_instruction": "Pick up the sphere and place it inside the bin.",
+      "low_level_plan": [
+        "find sphere",
+        "pick sphere",
+        "move_back sphere",
+        "move_right sphere",
+        "put bin"
+      ],
+      "llm_low_level_plan": [
+        "find sphere",
+        "pick sphere",
+        "move_back sphere",
+        "move_right sphere",
+        "put bin"
+      ],
+      "llm_plan_error": null,
+      "gt_interactable_objects": [
+        "table-workspace",
+        "sphere",
+        "bin"
+      ],
+      "perceived_objects": [
+        "sphere",
+        "bin"
+      ],
+      "grounding_recall": 0.6666666666666666,
+      "hallucination_rate": 0.0,
+      "refusal_detected": false,
+      "plan_judge_result": "Pass",
+      "planning_success": true,
+      "task_success": true,
+      "video_path": "imple_new/outputs/tabletop_run/idx00007_PlaceSphere-v1_seed000007/video_idx00007_PlaceSphere-v1_seed000007.mp4",
+      "execution": {
+        "num_total_steps": 5,
+        "num_success_steps": 5,
+        "success_rate": 1.0,
+        "replan_count": 0,
+        "logs": [
+          {
+            "step_idx": 1,
+            "instruction": "find sphere",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 2,
+            "instruction": "pick sphere",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 3,
+            "instruction": "move_back sphere",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 4,
+            "instruction": "move_right sphere",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 5,
+            "instruction": "put bin",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          }
+        ]
+      },
+      "idx": 7,
+      "expected_refusal": null,
+      "status": "ok"
+    },
+    {
+      "scene_id": "PlugCharger-v1",
+      "seed": 8,
+      "task_instruction": "Pick up the charger and insert it into the receptacle.",
+      "low_level_plan": [],
+      "llm_low_level_plan": [],
+      "llm_plan_error": "[Errno 32] Broken pipe",
+      "gt_interactable_objects": [
+        "table-workspace",
+        "charger",
+        "receptacle"
+      ],
+      "perceived_objects": [],
+      "grounding_recall": 0.0,
+      "hallucination_rate": 0.0,
+      "refusal_detected": false,
+      "plan_judge_result": "Incomplete",
+      "planning_success": false,
+      "task_success": false,
+      "video_path": "imple_new/outputs/tabletop_run/idx00008_PlugCharger-v1_seed000008/video_idx00008_PlugCharger-v1_seed000008.mp4",
+      "execution": {
+        "num_total_steps": 0,
+        "num_success_steps": 0,
+        "success_rate": 0.0,
+        "replan_count": 0,
+        "logs": []
+      },
+      "idx": 8,
+      "expected_refusal": null,
+      "status": "ok"
+    },
+    {
+      "scene_id": "PlugCharger-v1",
+      "seed": 9,
+      "task_instruction": "Insert the charger into the receptacle on the table-workspace.",
+      "low_level_plan": [
+        "find charger",
+        "pick charger",
+        "move_left charger",
+        "move_right charger",
+        "move_forward charger",
+        "move_back charger",
+        "insert receptacle"
+      ],
+      "llm_low_level_plan": [
+        "find charger",
+        "pick charger",
+        "move_left charger",
+        "move_right charger",
+        "move_forward charger",
+        "move_back charger",
+        "insert receptacle"
+      ],
+      "llm_plan_error": null,
+      "gt_interactable_objects": [
+        "table-workspace",
+        "charger",
+        "receptacle"
+      ],
+      "perceived_objects": [
+        "charger",
+        "receptacle"
+      ],
+      "grounding_recall": 0.6666666666666666,
+      "hallucination_rate": 0.0,
+      "refusal_detected": false,
+      "plan_judge_result": "Pass",
+      "planning_success": true,
+      "task_success": true,
+      "video_path": "imple_new/outputs/tabletop_run/idx00009_PlugCharger-v1_seed000009/video_idx00009_PlugCharger-v1_seed000009.mp4",
+      "execution": {
+        "num_total_steps": 7,
+        "num_success_steps": 7,
+        "success_rate": 1.0,
+        "replan_count": 0,
+        "logs": [
+          {
+            "step_idx": 1,
+            "instruction": "find charger",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 2,
+            "instruction": "pick charger",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 3,
+            "instruction": "move_left charger",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 4,
+            "instruction": "move_right charger",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 5,
+            "instruction": "move_forward charger",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 6,
+            "instruction": "move_back charger",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 7,
+            "instruction": "insert receptacle",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          }
+        ]
+      },
+      "idx": 9,
+      "expected_refusal": null,
+      "status": "ok"
+    },
+    {
+      "scene_id": "PokeCube-v1",
+      "seed": 10,
+      "task_instruction": "Pick up the cube and place it on the goal region.",
+      "low_level_plan": [
+        "find peg",
+        "pick peg",
+        "move_forward cube",
+        "put goal_region"
+      ],
+      "llm_low_level_plan": [
+        "find cube",
+        "pick cube",
+        "move_forward cube",
+        "put goal_region"
+      ],
+      "llm_plan_error": null,
+      "gt_interactable_objects": [
+        "table-workspace",
+        "cube",
+        "peg",
+        "goal_region"
+      ],
+      "perceived_objects": [
+        "cube",
+        "goal_region"
+      ],
+      "grounding_recall": 0.5,
+      "hallucination_rate": 0.0,
+      "refusal_detected": false,
+      "plan_judge_result": "Incomplete",
+      "planning_success": false,
+      "task_success": true,
+      "video_path": "imple_new/outputs/tabletop_run/idx00010_PokeCube-v1_seed000010/video_idx00010_PokeCube-v1_seed000010.mp4",
+      "execution": {
+        "num_total_steps": 4,
+        "num_success_steps": 4,
+        "success_rate": 1.0,
+        "replan_count": 0,
+        "logs": [
+          {
+            "step_idx": 1,
+            "instruction": "find peg",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 2,
+            "instruction": "pick peg",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 3,
+            "instruction": "move_forward cube",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 4,
+            "instruction": "put goal_region",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          }
+        ]
+      },
+      "idx": 10,
+      "expected_refusal": null,
+      "status": "ok"
+    },
+    {
+      "scene_id": "PokeCube-v1",
+      "seed": 11,
+      "task_instruction": "Pick up the cube and place it into the goal region.",
+      "low_level_plan": [],
+      "llm_low_level_plan": [],
+      "llm_plan_error": null,
+      "gt_interactable_objects": [
+        "table-workspace",
+        "cube",
+        "peg",
+        "goal_region"
+      ],
+      "perceived_objects": [],
+      "grounding_recall": 0.0,
+      "hallucination_rate": 0.0,
+      "refusal_detected": false,
+      "plan_judge_result": "Incomplete",
+      "planning_success": false,
+      "task_success": false,
+      "video_path": "imple_new/outputs/tabletop_run/idx00011_PokeCube-v1_seed000011/video_idx00011_PokeCube-v1_seed000011.mp4",
+      "execution": {
+        "num_total_steps": 0,
+        "num_success_steps": 0,
+        "success_rate": 0.0,
+        "replan_count": 0,
+        "logs": []
+      },
+      "idx": 11,
+      "expected_refusal": null,
+      "status": "ok"
+    },
+    {
+      "idx": 12,
+      "scene_id": "PullCube-v1",
+      "seed": 12,
+      "task_instruction": "Pull the cube towards the goal region on the table-workspace.",
+      "status": "failed",
+      "error": "[Errno 32] Broken pipe"
+    },
+    {
+      "scene_id": "PullCube-v1",
+      "seed": 13,
+      "task_instruction": "Pull the cube towards the goal region on the table-workspace.",
+      "low_level_plan": [
+        "find cube",
+        "pick cube",
+        "move_forward cube",
+        "drop"
+      ],
+      "llm_low_level_plan": [
+        "find cube",
+        "pick cube",
+        "move_forward cube",
+        "drop"
+      ],
+      "llm_plan_error": null,
+      "gt_interactable_objects": [
+        "table-workspace",
+        "cube",
+        "goal_region"
+      ],
+      "perceived_objects": [
+        "cube"
+      ],
+      "grounding_recall": 0.3333333333333333,
+      "hallucination_rate": 0.0,
+      "refusal_detected": false,
+      "plan_judge_result": "Pass",
+      "planning_success": true,
+      "task_success": true,
+      "video_path": "imple_new/outputs/tabletop_run/idx00013_PullCube-v1_seed000013/video_idx00013_PullCube-v1_seed000013.mp4",
+      "execution": {
+        "num_total_steps": 4,
+        "num_success_steps": 4,
+        "success_rate": 1.0,
+        "replan_count": 0,
+        "logs": [
+          {
+            "step_idx": 1,
+            "instruction": "find cube",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 2,
+            "instruction": "pick cube",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 3,
+            "instruction": "move_forward cube",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 4,
+            "instruction": "drop",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          }
+        ]
+      },
+      "idx": 13,
+      "expected_refusal": null,
+      "status": "ok"
+    },
+    {
+      "scene_id": "PullCubeTool-v1",
+      "seed": 14,
+      "task_instruction": "Pick up the L-shape tool and use it to pull the cube across the table.",
+      "low_level_plan": [],
+      "llm_low_level_plan": [],
+      "llm_plan_error": null,
+      "gt_interactable_objects": [
+        "table-workspace",
+        "cube",
+        "l_shape_tool"
+      ],
+      "perceived_objects": [],
+      "grounding_recall": 0.0,
+      "hallucination_rate": 0.0,
+      "refusal_detected": false,
+      "plan_judge_result": "Incomplete",
+      "planning_success": false,
+      "task_success": false,
+      "video_path": "imple_new/outputs/tabletop_run/idx00014_PullCubeTool-v1_seed000014/video_idx00014_PullCubeTool-v1_seed000014.mp4",
+      "execution": {
+        "num_total_steps": 0,
+        "num_success_steps": 0,
+        "success_rate": 0.0,
+        "replan_count": 0,
+        "logs": []
+      },
+      "idx": 14,
+      "expected_refusal": null,
+      "status": "ok"
+    },
+    {
+      "scene_id": "PullCubeTool-v1",
+      "seed": 15,
+      "task_instruction": "Pick up the cube, insert it into the L-shape tool, and place the assembly on the table-workspace.",
+      "low_level_plan": [
+        "find cube",
+        "pick cube",
+        "move_forward cube",
+        "find l_shape_tool",
+        "move_forward l_shape_tool",
+        "move_left l_shape_tool",
+        "move_right l_shape_tool",
+        "insert l_shape_tool",
+        "move_forward l_shape_tool",
+        "find table-workspace",
+        "put table-workspace"
+      ],
+      "llm_low_level_plan": [
+        "find cube",
+        "pick cube",
+        "move_forward cube",
+        "find l_shape_tool",
+        "move_forward l_shape_tool",
+        "move_left l_shape_tool",
+        "move_right l_shape_tool",
+        "insert l_shape_tool",
+        "move_forward l_shape_tool",
+        "find table-workspace",
+        "put table-workspace"
+      ],
+      "llm_plan_error": null,
+      "gt_interactable_objects": [
+        "table-workspace",
+        "cube",
+        "l_shape_tool"
+      ],
+      "perceived_objects": [
+        "cube",
+        "l_shape_tool",
+        "table-workspace"
+      ],
+      "grounding_recall": 1.0,
+      "hallucination_rate": 0.0,
+      "refusal_detected": false,
+      "plan_judge_result": "Pass",
+      "planning_success": true,
+      "task_success": false,
+      "video_path": "imple_new/outputs/tabletop_run/idx00015_PullCubeTool-v1_seed000015/video_idx00015_PullCubeTool-v1_seed000015.mp4",
+      "execution": {
+        "num_total_steps": 11,
+        "num_success_steps": 10,
+        "success_rate": 0.9090909090909091,
+        "replan_count": 0,
+        "logs": [
+          {
+            "step_idx": 1,
+            "instruction": "find cube",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 2,
+            "instruction": "pick cube",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 3,
+            "instruction": "move_forward cube",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 4,
+            "instruction": "find l_shape_tool",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 5,
+            "instruction": "move_forward l_shape_tool",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 6,
+            "instruction": "move_left l_shape_tool",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 7,
+            "instruction": "move_right l_shape_tool",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 8,
+            "instruction": "insert l_shape_tool",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 9,
+            "instruction": "move_forward l_shape_tool",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 10,
+            "instruction": "find table-workspace",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 11,
+            "instruction": "put table-workspace",
+            "success": false,
+            "message": "Nothing Done. Robot is not holding any object",
+            "errorMessage": "Nothing Done. Robot is not holding any object"
+          }
+        ]
+      },
+      "idx": 15,
+      "expected_refusal": null,
+      "status": "ok"
+    },
+    {
+      "scene_id": "PushCube-v1",
+      "seed": 16,
+      "task_instruction": "Push the cube across the table toward the goal region.",
+      "low_level_plan": [],
+      "llm_low_level_plan": [],
+      "llm_plan_error": "[Errno 32] Broken pipe",
+      "gt_interactable_objects": [
+        "table-workspace",
+        "cube",
+        "goal_region"
+      ],
+      "perceived_objects": [],
+      "grounding_recall": 0.0,
+      "hallucination_rate": 0.0,
+      "refusal_detected": false,
+      "plan_judge_result": "Incomplete",
+      "planning_success": false,
+      "task_success": false,
+      "video_path": "imple_new/outputs/tabletop_run/idx00016_PushCube-v1_seed000016/video_idx00016_PushCube-v1_seed000016.mp4",
+      "execution": {
+        "num_total_steps": 0,
+        "num_success_steps": 0,
+        "success_rate": 0.0,
+        "replan_count": 0,
+        "logs": []
+      },
+      "idx": 16,
+      "expected_refusal": null,
+      "status": "ok"
+    },
+    {
+      "scene_id": "PushCube-v1",
+      "seed": 17,
+      "task_instruction": "Push the cube across the table toward the goal region.",
+      "low_level_plan": [],
+      "llm_low_level_plan": [],
+      "llm_plan_error": null,
+      "gt_interactable_objects": [
+        "table-workspace",
+        "cube",
+        "goal_region"
+      ],
+      "perceived_objects": [],
+      "grounding_recall": 0.0,
+      "hallucination_rate": 0.0,
+      "refusal_detected": false,
+      "plan_judge_result": "Incomplete",
+      "planning_success": false,
+      "task_success": false,
+      "video_path": "imple_new/outputs/tabletop_run/idx00017_PushCube-v1_seed000017/video_idx00017_PushCube-v1_seed000017.mp4",
+      "execution": {
+        "num_total_steps": 0,
+        "num_success_steps": 0,
+        "success_rate": 0.0,
+        "replan_count": 0,
+        "logs": []
+      },
+      "idx": 17,
+      "expected_refusal": null,
+      "status": "ok"
+    },
+    {
+      "scene_id": "PushT-v1",
+      "seed": 18,
+      "task_instruction": "Push the Tee across the table-workspace toward the goal_Tee.",
+      "low_level_plan": [],
+      "llm_low_level_plan": [],
+      "llm_plan_error": null,
+      "gt_interactable_objects": [
+        "table-workspace",
+        "tee",
+        "goal_tee",
+        "goal_ee"
+      ],
+      "perceived_objects": [],
+      "grounding_recall": 0.0,
+      "hallucination_rate": 0.0,
+      "refusal_detected": false,
+      "plan_judge_result": "Incomplete",
+      "planning_success": false,
+      "task_success": false,
+      "video_path": "imple_new/outputs/tabletop_run/idx00018_PushT-v1_seed000018/video_idx00018_PushT-v1_seed000018.mp4",
+      "execution": {
+        "num_total_steps": 0,
+        "num_success_steps": 0,
+        "success_rate": 0.0,
+        "replan_count": 0,
+        "logs": []
+      },
+      "idx": 18,
+      "expected_refusal": null,
+      "status": "ok"
+    },
+    {
+      "scene_id": "PushT-v1",
+      "seed": 19,
+      "task_instruction": "Push the Tee across the table-workspace toward the goal_Tee.",
+      "low_level_plan": [],
+      "llm_low_level_plan": [],
+      "llm_plan_error": null,
+      "gt_interactable_objects": [
+        "table-workspace",
+        "tee",
+        "goal_tee",
+        "goal_ee"
+      ],
+      "perceived_objects": [],
+      "grounding_recall": 0.0,
+      "hallucination_rate": 0.0,
+      "refusal_detected": false,
+      "plan_judge_result": "Incomplete",
+      "planning_success": false,
+      "task_success": false,
+      "video_path": "imple_new/outputs/tabletop_run/idx00019_PushT-v1_seed000019/video_idx00019_PushT-v1_seed000019.mp4",
+      "execution": {
+        "num_total_steps": 0,
+        "num_success_steps": 0,
+        "success_rate": 0.0,
+        "replan_count": 0,
+        "logs": []
+      },
+      "idx": 19,
+      "expected_refusal": null,
+      "status": "ok"
+    },
+    {
+      "scene_id": "RollBall-v1",
+      "seed": 20,
+      "task_instruction": "Push the ball across the table-workspace toward the goal_region.",
+      "low_level_plan": [],
+      "llm_low_level_plan": [],
+      "llm_plan_error": "[Errno 32] Broken pipe",
+      "gt_interactable_objects": [
+        "table-workspace",
+        "ball",
+        "goal_region"
+      ],
+      "perceived_objects": [],
+      "grounding_recall": 0.0,
+      "hallucination_rate": 0.0,
+      "refusal_detected": false,
+      "plan_judge_result": "Incomplete",
+      "planning_success": false,
+      "task_success": false,
+      "video_path": "imple_new/outputs/tabletop_run/idx00020_RollBall-v1_seed000020/video_idx00020_RollBall-v1_seed000020.mp4",
+      "execution": {
+        "num_total_steps": 0,
+        "num_success_steps": 0,
+        "success_rate": 0.0,
+        "replan_count": 0,
+        "logs": []
+      },
+      "idx": 20,
+      "expected_refusal": null,
+      "status": "ok"
+    },
+    {
+      "scene_id": "RollBall-v1",
+      "seed": 21,
+      "task_instruction": "Push the ball across the table-workspace toward the goal_region.",
+      "low_level_plan": [],
+      "llm_low_level_plan": [],
+      "llm_plan_error": null,
+      "gt_interactable_objects": [
+        "table-workspace",
+        "ball",
+        "goal_region"
+      ],
+      "perceived_objects": [],
+      "grounding_recall": 0.0,
+      "hallucination_rate": 0.0,
+      "refusal_detected": false,
+      "plan_judge_result": "Incomplete",
+      "planning_success": false,
+      "task_success": false,
+      "video_path": "imple_new/outputs/tabletop_run/idx00021_RollBall-v1_seed000021/video_idx00021_RollBall-v1_seed000021.mp4",
+      "execution": {
+        "num_total_steps": 0,
+        "num_success_steps": 0,
+        "success_rate": 0.0,
+        "replan_count": 0,
+        "logs": []
+      },
+      "idx": 21,
+      "expected_refusal": null,
+      "status": "ok"
+    },
+    {
+      "scene_id": "StackCube-v1",
+      "seed": 22,
+      "task_instruction": "Pick up cubeA, rotate it ninety degrees, and place it on the table-workspace.",
+      "low_level_plan": [
+        "find cubea",
+        "pick cubea",
+        "put table-workspace"
+      ],
+      "llm_low_level_plan": [
+        "find cubea",
+        "pick cubea",
+        "put table-workspace"
+      ],
+      "llm_plan_error": null,
+      "gt_interactable_objects": [
+        "table-workspace",
+        "cubea",
+        "cubeb"
+      ],
+      "perceived_objects": [
+        "cubea",
+        "table-workspace"
+      ],
+      "grounding_recall": 0.6666666666666666,
+      "hallucination_rate": 0.0,
+      "refusal_detected": false,
+      "plan_judge_result": "Incomplete",
+      "planning_success": false,
+      "task_success": true,
+      "video_path": "imple_new/outputs/tabletop_run/idx00022_StackCube-v1_seed000022/video_idx00022_StackCube-v1_seed000022.mp4",
+      "execution": {
+        "num_total_steps": 3,
+        "num_success_steps": 3,
+        "success_rate": 1.0,
+        "replan_count": 0,
+        "logs": [
+          {
+            "step_idx": 1,
+            "instruction": "find cubea",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 2,
+            "instruction": "pick cubea",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 3,
+            "instruction": "put table-workspace",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          }
+        ]
+      },
+      "idx": 22,
+      "expected_refusal": null,
+      "status": "ok"
+    },
+    {
+      "scene_id": "StackCube-v1",
+      "seed": 23,
+      "task_instruction": "Pick up cubeA, rotate it ninety degrees, and place it on the table-workspace.",
+      "low_level_plan": [
+        "find cubea",
+        "pick cubea",
+        "move_back cubea",
+        "move_forward cubea",
+        "put table-workspace"
+      ],
+      "llm_low_level_plan": [
+        "find cubea",
+        "pick cubea",
+        "move_back cubea",
+        "move_forward cubea",
+        "put table-workspace"
+      ],
+      "llm_plan_error": null,
+      "gt_interactable_objects": [
+        "table-workspace",
+        "cubea",
+        "cubeb"
+      ],
+      "perceived_objects": [
+        "cubea",
+        "table-workspace"
+      ],
+      "grounding_recall": 0.6666666666666666,
+      "hallucination_rate": 0.0,
+      "refusal_detected": false,
+      "plan_judge_result": "Pass",
+      "planning_success": true,
+      "task_success": true,
+      "video_path": "imple_new/outputs/tabletop_run/idx00023_StackCube-v1_seed000023/video_idx00023_StackCube-v1_seed000023.mp4",
+      "execution": {
+        "num_total_steps": 5,
+        "num_success_steps": 5,
+        "success_rate": 1.0,
+        "replan_count": 0,
+        "logs": [
+          {
+            "step_idx": 1,
+            "instruction": "find cubea",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 2,
+            "instruction": "pick cubea",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 3,
+            "instruction": "move_back cubea",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 4,
+            "instruction": "move_forward cubea",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 5,
+            "instruction": "put table-workspace",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          }
+        ]
+      },
+      "idx": 23,
+      "expected_refusal": null,
+      "status": "ok"
+    },
+    {
+      "scene_id": "StackPyramid-v1",
+      "seed": 24,
+      "task_instruction": "Pick up cubeA, rotate it 90 degrees, and place it on top of cubeB.",
+      "low_level_plan": [
+        "find cubea",
+        "pick cubea",
+        "move_forward cubea",
+        "put cubeb"
+      ],
+      "llm_low_level_plan": [
+        "find cubea",
+        "pick cubea",
+        "move_forward cubea",
+        "put cubeb"
+      ],
+      "llm_plan_error": null,
+      "gt_interactable_objects": [
+        "table-workspace",
+        "cubea",
+        "cubeb",
+        "cubec"
+      ],
+      "perceived_objects": [
+        "cubea",
+        "cubeb"
+      ],
+      "grounding_recall": 0.5,
+      "hallucination_rate": 0.0,
+      "refusal_detected": false,
+      "plan_judge_result": "Incomplete",
+      "planning_success": false,
+      "task_success": true,
+      "video_path": "imple_new/outputs/tabletop_run/idx00024_StackPyramid-v1_seed000024/video_idx00024_StackPyramid-v1_seed000024.mp4",
+      "execution": {
+        "num_total_steps": 4,
+        "num_success_steps": 4,
+        "success_rate": 1.0,
+        "replan_count": 0,
+        "logs": [
+          {
+            "step_idx": 1,
+            "instruction": "find cubea",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 2,
+            "instruction": "pick cubea",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 3,
+            "instruction": "move_forward cubea",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          },
+          {
+            "step_idx": 4,
+            "instruction": "put cubeb",
+            "success": true,
+            "message": "",
+            "errorMessage": ""
+          }
+        ]
+      },
+      "idx": 24,
+      "expected_refusal": null,
+      "status": "ok"
+    },
+    {
+      "scene_id": "StackPyramid-v1",
+      "seed": 25,
+      "task_instruction": "Pick up cubeA, rotate it ninety degrees, and place it on top of cubeB.",
+      "low_level_plan": [],
+      "llm_low_level_plan": [],
+      "llm_plan_error": "[Errno 32] Broken pipe",
+      "gt_interactable_objects": [
+        "table-workspace",
+        "cubea",
+        "cubeb",
+        "cubec"
+      ],
+      "perceived_objects": [],
+      "grounding_recall": 0.0,
+      "hallucination_rate": 0.0,
+      "refusal_detected": false,
+      "plan_judge_result": "Incomplete",
+      "planning_success": false,
+      "task_success": false,
+      "video_path": "imple_new/outputs/tabletop_run/idx00025_StackPyramid-v1_seed000025/video_idx00025_StackPyramid-v1_seed000025.mp4",
+      "execution": {
+        "num_total_steps": 0,
+        "num_success_steps": 0,
+        "success_rate": 0.0,
+        "replan_count": 0,
+        "logs": []
+      },
+      "idx": 25,
+      "expected_refusal": null,
+      "status": "ok"
+    }
+  ]
+}
